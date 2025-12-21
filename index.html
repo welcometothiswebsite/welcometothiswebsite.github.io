@@ -36,7 +36,7 @@
 
     <script>
         // Set target date for January 5, 2026
-        const targetDate = new Date("Jan 5, 2026 00:00:00").getTime();
+        const targetDate = new Date("Jan 7, 2026 00:00:00").getTime();
 
         const updateTimer = setInterval(function() {
             const now = new Date().getTime();
@@ -55,7 +55,7 @@
             // If the countdown is finished
             if (distance < 0) {
                 clearInterval(updateTimer);
-                document.getElementById("countdown").innerHTML = "ITS JANUARY 5TH!";
+                document.getElementById("countdown").innerHTML = "IT'S JANUARY 7TH!";
             }
         }, 1000);
     </script>
