@@ -5,6 +5,17 @@
     <meta name="keywords" content="unblocked games, games, online games, welcome to this website, welcometothiswebiste">
     <link rel="icon" type="image/x-icon" href="games/icon.png">
     <title>secret homepage</title>
+    <style>
+        /* Style for the timer text */
+        #countdown {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f; /* Red color to stand out */
+            margin: 10px 0;
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <button onclick="window.location.href='/';">home</button>
@@ -12,10 +23,41 @@
     <button onclick="window.location.href='chat';">chat</button>
     <button onclick="window.location.href='proxyr';">proxy</button>
     <button onclick="window.location.href='ai';">ai chatbot</button>
+    
     <h1>welcome to this website</h1>
+
+    <!-- New Timer Section -->
+    <div id="countdown">Loading timer...</div>
+
     <p>this is secret website, i made in school!</p>
     <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
     <span>enjoying? click here! --></span>
-<a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
+    <a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
+
+    <script>
+        // Set target date for January 5, 2026
+        const targetDate = new Date("Jan 5, 2026 00:00:00").getTime();
+
+        const updateTimer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // Calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display result
+            document.getElementById("countdown").innerHTML = 
+                days + "d : " + hours + "h : " + minutes + "m : " + seconds + "s";
+
+            // If the countdown is finished
+            if (distance < 0) {
+                clearInterval(updateTimer);
+                document.getElementById("countdown").innerHTML = "ITS JANUARY 5TH!";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
