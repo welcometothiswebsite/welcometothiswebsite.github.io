@@ -19,8 +19,22 @@
     </style>
 </head>
 <body>
-    <a href='https://www.free-counters.org/'>powered by Free-Counters.org</a> <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=21750cb9a1700436b5894f4a6117e61f5dbb716f'></script>
-    <script type="text/javascript" src="https://freevisitorcounters.com/en/home/counter/1465401/t/2"></script>
+    <div id="visitor-counter">
+      <a href="https://www.free-counters.org/">powered by Free-Counters.org</a>
+      <script type="text/javascript" src="https://www.freevisitorcounters.com/auth.php?id=21750cb9a1700436b5894f4a6117e61f5dbb716f"></script>
+      <script type="text/javascript" src="https://freevisitorcounters.com/en/home/counter/1465401/t/2"></script>
+    </div>
+    
+    <style>
+      #visitor-counter {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        text-align: right;
+      }
+    </style>
+
     <button onclick="window.location.href='/';">home</button>
     <button onclick="window.location.href='games';">games</button>
     <button onclick="window.location.href='chat';">chat</button>
