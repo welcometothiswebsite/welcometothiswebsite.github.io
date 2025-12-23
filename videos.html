@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-adsense-account" content="ca-pub-3277185640418528">
+    <link rel="icon" type="image/x-icon" href="games/icon.png">
+    <title>Video Search</title>
+</head>
+<body>
+    <h2>Search Videos</h2>
+    <input type="text" id="searchQuery" placeholder="Type something...">
+    <button onclick="searchVideos()">Search</button>
+
+    <script>
+        function searchVideos() {
+            // Get the user's input
+            var query = document.getElementById("searchQuery").value;
+            if(query.trim() !== "") {
+                // Open Bing Videos search in a new tab
+                var url = "https://www.bing.com/videos/search?q=" + encodeURIComponent(query);
+                window.open(url, "_blank");
+            } else {
+                alert("Please enter a search term!");
+            }
+        }
+    </script>
+</body>
+</html>
