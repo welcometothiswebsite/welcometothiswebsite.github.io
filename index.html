@@ -15,6 +15,12 @@
             margin: 10px 0;
             display: block;
         }
+        #visitor-counter {
+          position: fixed;
+          top: 10px;      /* distance from top */
+          right: 10px;    /* distance from right */
+          z-index: 1000;  /* ensure it stays on top */
+        }
     </style>
     <style>
     /* catch any element inserted by SuperCounters and pin top‑right */
@@ -25,13 +31,21 @@
         z-index: 9999 !important;
     }
     </style>
-    
+
     <script src="//widget.supercounters.com/ssl/online_i.js"></script>
     <script>
         sc_online_i(1726637,"ffffff","e61c1c");
     </script>
 </head>
 <body>
+    <!-- Visitor counter positioned top-right -->
+    <script type="text/javascript" 
+        src="//widget.supercounters.com/ssl/online_i.js"
+        style="position: fixed; top: 10px; right: 10px; z-index: 9999;">
+    </script>
+    <script type="text/javascript">
+        sc_online_i(1726637, "ffffff", "e61c1c");
+    </script>
     <button onclick="window.location.href='/';">home</button>
     <button onclick="window.location.href='games';">games</button>
     <button onclick="window.location.href='chat';">chat</button>
