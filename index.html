@@ -17,21 +17,21 @@
         }
     </style>
     <style>
-    /* Target the Supercounters counter */
-    #supercounters_widget_1726637 {
+    /* catch any element inserted by SuperCounters and pin top‑right */
+    body > *:not(script)[style*="counter"] {
         position: fixed !important;
-        top: 10px;
-        right: 10px;
-        z-index: 9999;
+        top: 10px !important;
+        right: 10px !important;
+        z-index: 9999 !important;
     }
     </style>
+    
+    <script src="//widget.supercounters.com/ssl/online_i.js"></script>
+    <script>
+        sc_online_i(1726637,"ffffff","e61c1c");
+    </script>
 </head>
 <body>
-    <!-- Visitor counter positioned top-right -->
-    <script type="text/javascript" src="//widget.supercounters.com/ssl/online_i.js"></script>
-    <script type="text/javascript">
-       sc_online_i(1726637, "ffffff", "e61c1c");
-     </script>
     <button onclick="window.location.href='/';">home</button>
     <button onclick="window.location.href='games';">games</button>
     <button onclick="window.location.href='chat';">chat</button>
