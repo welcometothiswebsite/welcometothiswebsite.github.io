@@ -7,7 +7,6 @@
     <link rel="icon" type="image/x-icon" href="games/icon.png">
     <title>secret homepage</title>
     <style>
-        /* Style for the timer text */
         #countdown {
             font-family: monospace;
             font-size: 24px;
@@ -16,9 +15,18 @@
             margin: 10px 0;
             display: block;
         }
+        #visitor-counter {
+          position: fixed;
+          top: 10px;      /* distance from top */
+          right: 10px;    /* distance from right */
+          z-index: 1000;  /* ensure it stays on top */
+        }
     </style>
 </head>
 <body>
+    <div id="visitor-counter">
+      <img src="https://speedcounter.net/counter-v2/4831030-online-brightgreen.svg" alt="visitors online">
+    </div>
     <button onclick="window.location.href='/';">home</button>
     <button onclick="window.location.href='games';">games</button>
     <button onclick="window.location.href='chat';">chat</button>
