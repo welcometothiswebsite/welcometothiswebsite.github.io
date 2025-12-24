@@ -56,6 +56,7 @@
     <span>BIG UPDATE! IN</span>
     <div id="countdown">Loading timer...</div>
     <p>this is secret website, i made in school!</p>
+    <h4>recommend games!</h4>
     <div class="ticker"></div>
     
     <style>
@@ -85,24 +86,52 @@
         { name: "granny", url: "https://welcometothiswebsite.github.io/games/granny" },
         { name: "cookie clicker", url: "https://welcometothiswebsite.github.io/games/cookieclicker" },
         { name: "bitlife", url: "https://welcometothiswebsite.github.io/games/bitlife" },
-        { name: "geometry dash lite", url: "https://welcometothiswebsite.github.io/games/gdlite" }
+        { name: "geometry dash lite", url: "https://welcometothiswebsite.github.io/games/gdlite" },
+        { name: "geometry vibes", url: "https://welcometothiswebsite.github.io/games/gdvibes" },
+        { name: "duck life", url: "https://welcometothiswebsite.github.io/games/ducklife" },
+        { name: "crossy road", url: "https://welcometothiswebsite.github.io/games/crossyroad" }
     ];
     
-    // Select the ticker container
+    // Select ticker container
     const ticker = document.querySelector(".ticker");
     
-    // Add buttons dynamically with game names
-    games.forEach(game => {
-        const btn = document.createElement("button");
-        btn.textContent = game.name;
+    // Function to shuffle array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
     
-        // When clicked, open a random game from the list
-        btn.addEventListener("click", () => {
-            const randomGame = games[Math.floor(Math.random() * games.length)];
-            window.open(randomGame.url, "_blank");
+    // Function to render buttons
+    function renderButtons() {
+        // Clear previous buttons
+        ticker.innerHTML = "";
+    
+        // Shuffle games each render
+        shuffleArray(games);
+    
+        // Create buttons
+        games.forEach(game => {
+            const btn = document.createElement("button");
+            btn.textContent = game.name;
+    
+            // On click, open random game
+            btn.addEventListener("click", () => {
+                const randomGame = games[Math.floor(Math.random() * games.length)];
+                window.open(randomGame.url, "_blank");
+            });
+    
+            ticker.appendChild(btn);
         });
+    }
     
-        ticker.appendChild(btn);
+    // Initial render
+    renderButtons();
+    
+    // Detect when animation restarts
+    ticker.addEventListener("animationiteration", () => {
+        renderButtons(); // Reshuffle buttons each time animation loops
     });
     </script>
     <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
