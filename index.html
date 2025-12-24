@@ -63,10 +63,11 @@
     /* Ticker container */
     .ticker {
         display: flex;
-        gap: 20px;
+        gap: 15px;
         animation: move-left 15s linear infinite;
         margin: 20px 0;
         overflow: hidden;
+        width: calc(100% - 2px); /* Full width minus 2px */
     }
     /* Animation moving buttons from right to left */
     @keyframes move-left {
@@ -88,7 +89,9 @@
         { name: "bitlife", url: "https://welcometothiswebsite.github.io/games/bitlife" },
         { name: "geometry dash lite", url: "https://welcometothiswebsite.github.io/games/gdlite" },
         { name: "geometry vibes", url: "https://welcometothiswebsite.github.io/games/gdvibes" },
-        { name: "duck life", url: "https://welcometothiswebsite.github.io/games/ducklife" }
+        { name: "duck life", url: "https://welcometothiswebsite.github.io/games/ducklife" },
+        { name: "escape road", url: "https://welcometothiswebsite.github.io/games/escaperoad" },
+        { name: "drift boss", url: "https://welcometothiswebsite.github.io/games/driftboss" }
     ];
     
     // Select ticker container
@@ -118,7 +121,7 @@
             // On click, open random game
             btn.addEventListener("click", () => {
                 const randomGame = games[Math.floor(Math.random() * games.length)];
-                window.open(randomGame.url, "_blank");
+                window.open(game.url, "_blank");
             });
     
             ticker.appendChild(btn);
