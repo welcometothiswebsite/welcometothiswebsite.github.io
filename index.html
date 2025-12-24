@@ -3,7 +3,7 @@
 <head>
     <meta name="google-adsense-account" content="ca-pub-3277185640418528">
     <meta name="keywords" content="unblocked games, games, online games, welcome to this website, welcometothiswebsite">
-    <meta name="description" content="Welcome to the best unblocked game website ever!">
+    <meta name="description" content="Welcome to the best unblocked games website ever! We have unblocked games, chatting with friends, and more!">
     <link rel="icon" type="image/x-icon" href="games/icon.png">
     <title>secret homepage</title>
     <style>
@@ -55,8 +55,56 @@
 
     <span>BIG UPDATE! IN</span>
     <div id="countdown">Loading timer...</div>
-
     <p>this is secret website, i made in school!</p>
+    <div class="ticker"></div>
+    
+    <style>
+    /* Ticker container */
+    .ticker {
+        display: flex;
+        gap: 20px;
+        animation: move-left 15s linear infinite;
+        margin: 20px 0;
+        overflow: hidden;
+    }
+    /* Animation moving buttons from right to left */
+    @keyframes move-left {
+        0% { transform: translateX(100vw); }
+        100% { transform: translateX(-500px); }
+    }
+    </style>
+    
+    <script>
+    // List of games (name + URL)
+    const games = [
+        { name: "eaglecraft 1.8.8", url: "https://welcometothiswebsite.github.io/games/eaglecraft" },
+        { name: "drive mad", url: "https://welcometothiswebsite.github.io/games/drivemad" },
+        { name: "extreme run", url: "https://welcometothiswebsite.github.io/games/extremerun" },
+        { name: "fortzone", url: "https://welcometothiswebsite.github.io/games/fortzone" },
+        { name: "n-gon", url: "https://welcometothiswebsite.github.io/games/ngon" },
+        { name: "granny", url: "https://welcometothiswebsite.github.io/games/granny" },
+        { name: "cookie clicker", url: "https://welcometothiswebsite.github.io/games/cookieclicker" },
+        { name: "bitlife", url: "https://welcometothiswebsite.github.io/games/bitlife" },
+        { name: "geometry dash lite", url: "https://welcometothiswebsite.github.io/games/gdlite" }
+    ];
+    
+    // Select the ticker container
+    const ticker = document.querySelector(".ticker");
+    
+    // Add buttons dynamically with game names
+    games.forEach(game => {
+        const btn = document.createElement("button");
+        btn.textContent = game.name;
+    
+        // When clicked, open a random game from the list
+        btn.addEventListener("click", () => {
+            const randomGame = games[Math.floor(Math.random() * games.length)];
+            window.open(randomGame.url, "_blank");
+        });
+    
+        ticker.appendChild(btn);
+    });
+    </script>
     <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
     <span>enjoying? click here! --></span>
     <a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
