@@ -60,24 +60,37 @@
     <div class="ticker"></div>
     
     <style>
-    /* Ticker container */
     .ticker {
         display: flex;
         gap: 15px;
-        animation: move-left 15s linear infinite;
-        margin: 20px 0;
         overflow: hidden;
-        width: calc(100% - 2px); /* Full width minus 2px */
+        width: calc(100% - 2px);
+        white-space: nowrap;
+        box-sizing: border-box;
     }
-    /* Animation moving buttons from right to left */
-    @keyframes move-left {
-        0% { transform: translateX(100vw); }
-        100% { transform: translateX(-500px); }
+    
+    .ticker-content {
+        display: flex;
+        gap: 15px;
+        animation: scroll 15s linear infinite;
+    }
+    
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); } /* scroll half since content is duplicated */
+    }
+    
+    .ticker button {
+        flex: 0 0 auto;
     }
     </style>
     
+    <div class="ticker">
+        <div class="ticker-content" id="tickerContent"></div>
+    </div>
+    
     <script>
-    // List of games (name + URL)
+    // List of games
     const games = [
         { name: "eaglecraft 1.8.8", url: "https://welcometothiswebsite.github.io/games/eaglecraft" },
         { name: "drive mad", url: "https://welcometothiswebsite.github.io/games/drivemad" },
@@ -94,10 +107,9 @@
         { name: "drift boss", url: "https://welcometothiswebsite.github.io/games/driftboss" }
     ];
     
-    // Select ticker container
-    const ticker = document.querySelector(".ticker");
+    const tickerContent = document.getElementById("tickerContent");
     
-    // Function to shuffle array
+    // Shuffle games
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -105,36 +117,29 @@
         }
     }
     
-    // Function to render buttons
-    function renderButtons() {
-        // Clear previous buttons
-        ticker.innerHTML = "";
-    
-        // Shuffle games each render
+    // Render buttons (and duplicate for infinite scroll)
+    function renderTicker() {
+        tickerContent.innerHTML = "";
         shuffleArray(games);
     
         // Create buttons
         games.forEach(game => {
             const btn = document.createElement("button");
             btn.textContent = game.name;
+            btn.onclick = () => window.open(game.url, "_blank");
+            tickerContent.appendChild(btn);
+        });
     
-            // On click, open random game
-            btn.addEventListener("click", () => {
-                const randomGame = games[Math.floor(Math.random() * games.length)];
-                window.open(game.url, "_blank");
-            });
-    
-            ticker.appendChild(btn);
+        // Duplicate the same buttons for smooth infinite scrolling
+        games.forEach(game => {
+            const btn = document.createElement("button");
+            btn.textContent = game.name;
+            btn.onclick = () => window.open(game.url, "_blank");
+            tickerContent.appendChild(btn);
         });
     }
     
-    // Initial render
-    renderButtons();
-    
-    // Detect when animation restarts
-    ticker.addEventListener("animationiteration", () => {
-        renderButtons(); // Reshuffle buttons each time animation loops
-    });
+    renderTicker();
     </script>
     <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
     <span>enjoying? click here! --></span>
