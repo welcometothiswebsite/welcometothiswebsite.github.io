@@ -13,7 +13,94 @@
     <button onclick="window.location.href='ai';">ai chatbot</button>
     <h1>welcome to gamespage</h1>
     <p>this is secret gamewebsite.</p>
-    <p>63 games</p>
+    <h4>popular games!</h4>
+    <div class="ticker"></div>
+    
+    <style>
+    .ticker {
+        display: flex;
+        gap: 15px;
+        overflow: hidden;
+        width: calc(100% - 2px);
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+    
+    .ticker-content {
+        display: flex;
+        gap: 15px;
+        animation: scroll 15s linear infinite;
+    }
+    
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); } /* scroll half since content is duplicated */
+    }
+    
+    .ticker button {
+        flex: 0 0 auto;
+    }
+    </style>
+    
+    <div class="ticker">
+        <div class="ticker-content" id="tickerContent"></div>
+    </div>
+    
+    <script>
+    // List of games
+    const games = [
+        { name: "eaglecraft 1.8.8", url: "https://welcometothiswebsite.github.io/games/eaglecraft" },
+        { name: "eaglecraft 1.12.2", url: "https://welcometothiswebsite.github.io/games/eaglecraft12" },
+        { name: "drive mad", url: "https://welcometothiswebsite.github.io/games/drivemad" },
+        { name: "extreme run", url: "https://welcometothiswebsite.github.io/games/extremerun" },
+        { name: "fortzone battle royale", url: "https://welcometothiswebsite.github.io/games/fortzone" },
+        { name: "n-gon", url: "https://welcometothiswebsite.github.io/games/ngon" },
+        { name: "granny", url: "https://welcometothiswebsite.github.io/games/granny" },
+        { name: "cookie clicker", url: "https://welcometothiswebsite.github.io/games/cookieclicker" },
+        { name: "bitlife", url: "https://welcometothiswebsite.github.io/games/bitlife" },
+        { name: "geometry dash lite", url: "https://welcometothiswebsite.github.io/games/gdlite" },
+        { name: "geometry vibes", url: "https://welcometothiswebsite.github.io/games/gdvibes" },
+        { name: "duck life", url: "https://welcometothiswebsite.github.io/games/ducklife" },
+        { name: "escape road", url: "https://welcometothiswebsite.github.io/games/escaperoad" },
+        { name: "drift boss", url: "https://welcometothiswebsite.github.io/games/driftboss" },
+        { name: "ovo", url: "https://welcometothiswebsite.github.io/games/ovo" }
+    ];
+    
+    const tickerContent = document.getElementById("tickerContent");
+    
+    // Shuffle games
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    
+    // Render buttons (and duplicate for infinite scroll)
+    function renderTicker() {
+        tickerContent.innerHTML = "";
+        shuffleArray(games);
+    
+        // Create buttons
+        games.forEach(game => {
+            const btn = document.createElement("button");
+            btn.textContent = game.name;
+            btn.onclick = () => window.open(game.url, "_blank");
+            tickerContent.appendChild(btn);
+        });
+    
+        // Duplicate the same buttons for smooth infinite scrolling
+        games.forEach(game => {
+            const btn = document.createElement("button");
+            btn.textContent = game.name;
+            btn.onclick = () => window.open(game.url, "_blank");
+            tickerContent.appendChild(btn);
+        });
+    }
+    
+    renderTicker();
+    </script>
+    <p>63 games ↓</p>
     <p>-a-</p>
     <button onclick="window.location.href='games/adarkroom';">a dark room</button>
     <button onclick="window.location.href='games/adayintheoffice';">a day in the office</button>
