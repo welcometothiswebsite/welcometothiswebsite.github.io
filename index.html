@@ -1,184 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<style>
-body {
-    margin: 0;
-    height: 100vh;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-}
-
-/* ===== LOADER ===== */
-.loader {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    transition: transform 1.2s ease, opacity 0.6s ease;
-    z-index: 1000; /* LOWER than overlay */
-}
-
-.ring {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: conic-gradient(
-        black 0deg,
-        black var(--angle),
-        #f0f0f0 var(--angle)
-    );
-}
-
-.ring::after {
-    content: "";
-    position: absolute;
-    inset: 2px;
-    background: white;
-    border-radius: 50%;
-}
-
-.logo {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    font-weight: 600;
-    color: black;
-}
-
-/* ===== UPDATE POPUP ===== */
-.update-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(12px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none; /* initially not clickable */
-    transition: opacity 0.8s ease;
-    z-index: 2000; /* HIGHER than loader */
-}
-
-.update-box {
-    width: 85vw;
-    height: 80vh;
-    background: rgba(255,255,255,0.85);
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-}
-
-.update-box h1 {
-    margin: 0 0 20px;
-    font-size: 36px;
-}
-
-.update-box p {
-    font-size: 18px;
-    color: #444;
-    flex: 1;
-}
-
-/* Continue button */
-.continue-btn {
-    align-self: flex-end;
-    padding: 14px 36px;
-    border-radius: 999px;
-    border: none;
-    background: black;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-/* ===== STATES ===== */
-body.zoom .loader {
-    transform: scale(12);
-    opacity: 0;
-}
-
-body.show-updates .update-overlay {
-    opacity: 1;
-    pointer-events: auto; /* ENABLE clicks now */
-}
-</style>
-</head>
-
-<body>
-
-<!-- ===== LOADER ===== -->
-<div class="loader">
-    <div class="ring" id="ring"></div>
-    <img src="logo.png" alt="Logo"
-         style="
-            width:200px; 
-            height:200px; 
-            object-fit:contain; 
-            transition: transform 1.2s ease; 
-            display:block;
-            margin-top:-10px; /* move it up */
-         ">
-</div>
-
-<!-- ===== UPDATE POPUP ===== -->
-<div class="update-overlay">
-    <div class="update-box">
-        <h1>Updates</h1>
-        <p>
-            • New features<br>
-            • Improvements<br>
-            • Bug fixes
-        </p>
-        <button class="continue-btn" onclick="continueApp()">Continue</button>
-    </div>
-</div>
-
-<script>
-let progress = 0;
-const ring = document.getElementById("ring");
-
-const interval = setInterval(() => {
-    progress += 1;
-    ring.style.setProperty("--angle", `${progress * 3.6}deg`);
-
-    if (progress >= 100) {
-        clearInterval(interval);
-
-        // Zoom in loader
-        document.body.classList.add("zoom");
-
-        // Show update popup after zoom
-        setTimeout(() => {
-            document.body.classList.add("show-updates");
-        }, 900);
+    <meta name="google-adsense-account" content="ca-pub-3277185640418528">
+    <meta name="keywords" content="unblocked games, games, online games, welcome to this website, welcometothiswebsite">
+    <meta name="description" content="Welcome to the my unblocked games website!">
+    <link rel="icon" type="image/x-icon" href="games/icon.png">
+    <title>secret homepage</title>
+    <style>
+        #countdown {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #d32f2f; /* Red color to stand out */
+            margin: 10px 0;
+            display: block;
+        }
+        #visitor-counter {
+          position: fixed;
+          top: 10px;      /* distance from top */
+          right: 10px;    /* distance from right */
+          z-index: 1000;  /* ensure it stays on top */
+        }
+    </style>
+    <style>
+    /* catch any element inserted by SuperCounters and pin top‑right  */
+    body > *:not(script)[style*="counter"] {
+        position: fixed !important;
+        top: 10px !important;
+        right: 10px !important;
+        z-index: 9999 !important;
     }
-}, 11); // slow growth like before
+    </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528"
+     crossorigin="anonymous"></script>
+    <script src="//widget.supercounters.com/ssl/online_i.js"></script>
+    <script>
+        sc_online_i(1726637,"ffffff","e61c1c");
+    </script>
+</head>
+<body>
+    <button onclick="window.location.href='/';">home</button>
+    <button onclick="window.location.href='games';">games</button>
+    <button onclick="window.location.href='proxyr';">proxy</button>
+    <button onclick="window.location.href='ai';">ai chatbot</button>
+        <!-- Visitor counter positioned top-right -->
+    <script type="text/javascript" 
+        src="//widget.supercounters.com/ssl/online_i.js"
+        style="position: fixed; top: 10px; right: 10px; z-index: 9999;">
+    </script>
+    <script type="text/javascript">
+        sc_online_i(1726637, "ffffff", "e61c1c");
+    </script>
+    <h1>welcome to this website!</h1>
+    <p>hello! welcome to this website, in this website we make as much things possible for you to have fun!</p>
+    <p>i like coding! and i coded this website because coding for me is fun, and i can have no boredom!</p>
+    <p>please recommended this website to more people trying to get a goal of 17 online at once! for a big! update!</p>
+    <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
+    <span>enjoying? click here! --></span>
+    <a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
 
-// ===== CONTINUE BUTTON REPLACES PAGE WITH main.html =====
-function continueApp() {
-    fetch('indexcopy.html')
-        .then(response => response.text())
-        .then(html => {
-            document.open();
-            document.write(html);
-            document.close();
-        })
-        .catch(err => {
-            console.error('Failed to load main.html:', err);
-        });
-}
-</script>
+    <script>
+        // Set target date for January 5, 2026
+        const targetDate = new Date("Jan 7, 2026 11:30:00").getTime();
 
+        const updateTimer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // Calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display result
+            document.getElementById("countdown").innerHTML = 
+                days + "d : " + hours + "h : " + minutes + "m : " + seconds + "s";
+
+            // If the countdown is finished
+            if (distance < 0) {
+                clearInterval(updateTimer);
+                document.getElementById("countdown").innerHTML = "IT'S JANUARY 7TH!";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
