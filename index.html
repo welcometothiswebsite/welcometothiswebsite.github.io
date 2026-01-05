@@ -21,6 +21,13 @@
           right: 10px;    /* distance from right */
           z-index: 1000;  /* ensure it stays on top */
         }
+        .hit-counter {
+          position: fixed;   /* stays in place even when scrolling */
+          top: 10px;
+          right: 10px;
+          z-index: 9999;
+        }
+
     </style>
     <style>
     /* catch any element inserted by SuperCounters and pin top‑right  */
@@ -35,6 +42,13 @@
      crossorigin="anonymous"></script>
 </head>
 <body>
+    <div class="hit-counter">
+      <a href="https://www.hitwebcounter.com/" target="_blank">
+        <img src="https://hitwebcounter.com/counter/counter.php?page=21467499&style=0001&nbdigits=5&type=page&initCount=0"
+             title="Free Tools"
+             alt="Free Tools">
+      </a>
+    </div>
     <button onclick="window.location.href='/';">home</button>
     <button onclick="window.location.href='games';">games</button>
     <button onclick="window.location.href='proxyr';">proxy</button>
