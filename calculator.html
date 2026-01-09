@@ -208,8 +208,6 @@
             if (endings[key]) {
                 unlockEnding(endings[key]);
                 if (endings[key] === "Jump Scare Ending") {
-                    triggerJumpScare();
-                } else {
                     replacePageWithEnding(endings[key], false);
                 }
             } else {
