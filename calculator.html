@@ -211,7 +211,7 @@
                     replacePageWithEnding(endings[key], false);
                 }
             } else {
-                alert("Invalid input! Please enter valid numbers or ending codes.");
+                alert("[error][404] Invalid input! Please enter valid numbers or ending codes.");
             }
 
             checkForCompletion();
@@ -352,7 +352,7 @@
         }
 
         function resetEndings() {
-            if (confirm("Are you sure you want to delete all endings? This cannot be undone. [error][404]")) {
+            if (confirm("Are you sure you want to delete all endings? This cannot be undone.")) {
                 localStorage.removeItem("endings");
                 alert("All endings have been deleted.");
             }
