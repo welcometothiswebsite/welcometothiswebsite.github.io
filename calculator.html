@@ -171,7 +171,6 @@
             "black-hole": "Black Hole Ending",
             "white-hole": "White Hole Ending"
         };
-
         // Final ending (special)
         const finalEndingKey = "you-won";
         const finalEndingName = "You won!";
@@ -363,8 +362,24 @@
             }
         }
 
-        window.onload = function() {
+        window.onload = function () {
             checkForCompletion();
+            if (Math.random() < 0.10) { // 10% chance
+                const mysteryTexts = [
+                    "???",
+                    "[subscribetomy]",
+                    "[channel@josephasn]",
+                    "[robots][uprising]",
+                    "some endings are in plain sight"
+                ];
+        
+                const inputId = Math.random() < 0.5 ? "input1" : "input2";
+                const input = document.getElementById(inputId);
+        
+                if (input) {
+                    input.value = mysteryTexts[Math.floor(Math.random() * mysteryTexts.length)];
+                }
+            }
         };
     </script>
 </head>
