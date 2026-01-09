@@ -207,9 +207,7 @@
             // Normal endings
             if (endings[key]) {
                 unlockEnding(endings[key]);
-                if (endings[key] === "Jump Scare Ending") {
-                    replacePageWithEnding(endings[key], false);
-                }
+                replacePageWithEnding(endings[key], false);
             } else {
                 alert("[error][404] Invalid input! Please enter valid numbers or ending codes.");
             }
