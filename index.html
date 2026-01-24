@@ -1,118 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta name="google-adsense-account" content="ca-pub-3277185640418528">
-    <meta name="keywords" content="unblocked games, games, online games, welcome to this website, welcometothiswebsite">
-    <meta name="description" content="Welcome to the my unblocked games website!">
-    <link rel="icon" type="image/x-icon" href="games/icon.png">
-    <title>secret homepage</title>
-    <style>
-        #iframe-box {
-          position: fixed;
-          top: 50px;          /* slightly below counters */
-          right: 10px;
-          width: 260px;
-          height: 160px;
-          background: #111;
-          border: 2px solid #444;
-          border-radius: 8px;
-          z-index: 9000;
-          overflow: hidden;
-        }
-        
-        #iframe-box iframe {
-          width: 100%;
-          height: 100%;
-          border: none;
-        }
-        #countdown {
-            font-family: monospace;
-            font-size: 24px;
-            font-weight: bold;
-            color: #d32f2f; /* Red color to stand out */
-            margin: 10px 0;
-            display: block;
-        }
-        #visitor-counter {
-          position: fixed;
-          top: 10px;      /* distance from top */
-          right: 10px;    /* distance from right */
-          z-index: 1000;  /* ensure it stays on top */
-        }
-        .hit-counter {
-          position: fixed;   /* stays in place even when scrolling */
-          top: 10px;
-          right: 10px;
-          z-index: 9999;
-        }
-
-    </style>
-    <style>
-    /* catch any element inserted by SuperCounters and pin top‑right  */
-    body > *:not(script)[style*="counter"] {
-        position: fixed !important;
-        top: 10px !important;
-        right: 10px !important;
-        z-index: 9999 !important;
-    }
-    </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528"
-     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampler Launcher</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" media="screen and (max-width: 1100px)" href="css/screensize.css">
+    <link rel="stylesheet" media="screen and (max-height: 550px)" href="css/screensize.css">
+    <link rel="shortcut icon" href="./assets/images/logo.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <!-- Discord-->
+    <meta content="Ampler Launcher" property="og:title">
+    <meta content="A minecraft themed launcher for Eaglercraft!" property="og:description">
+    <meta content="https://irv77.github.io/AmplerLauncher/" property="og:url">
+    <meta content="https://irv77.github.io/AmplerLauncher/assets/images/logo.png" property="og:image">
+    <meta content="#786d81" data-react-helmet="true" name="theme-color">
 </head>
+
 <body>
-    <button onclick="window.location.href='/';">home</button>
-    <button onclick="window,location.hrek='games';">games</button>
-    <button onclick="window,location.hrek='launcher';">minecraft launcher</button>
-    <button onclick="window.location.href='proxyr';">proxy</button>
-    <button onclick="window.location.href='ai';">ai chatbot</button>
-    <h1>welcome to this website!</h1>
-    <p>hello! welcome to this website, in this website we make as much things possible for you to have fun!</p>
-    <p>i like coding! and i coded this website because coding for me is fun, and i can have no boredom!</p>
-    <p>please recommended this website to more people trying to get a goal of 17 online at once! for a big! update!</p>
-    <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
-    <span>enjoying? click here! --></span>
-    <a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
-    <h4>updates! [Jan 24, 2026]</h4>
-    <p>added 1 game to -p-</p>
-    <p>added helios and ultraviolet to proxy.</p>
-    <h4>updates coming soon!</h4>
-    <p>adding chat soon</p>
-    <p>adding youtube videos (for if youtube blocked)</p>
-    <h3>↓</h3>
-    <h4>fun game made by owner:</h4>
-    <h5>the calculator game</h5>
-    <a href="https://welcometothiswebsite.github.io/calculator">click here to play</a>
-    <div>
-        <iframe
-        src="https://welcometothiswebsite.github.io/calculator"
-        loading="lazy"
-        referrerpolicy="no-referrer">
-        </iframe>
+    <div id="notescreen"></div>
+    <div id="naerror" class="error">
+        <div>
+            <p style="margin-left: 1vw;" class="bolded">SORRY!</p>
+            <p style="color: goldenrod;" id="errortext">This feature hasn't been made yet.</p>
+        </div>
     </div>
-    <script>
-        // Set target date for January 5, 2026
-        const targetDate = new Date("Jan 7, 2026 11:30:00").getTime();
-
-        const updateTimer = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            // Calculations for days, hours, minutes and seconds
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display result
-            document.getElementById("countdown").innerHTML = 
-                days + "d : " + hours + "h : " + minutes + "m : " + seconds + "s";
-
-            // If the countdown is finished
-            if (distance < 0) {
-                clearInterval(updateTimer);
-                document.getElementById("countdown").innerHTML = "IT'S JANUARY 7TH!";
-            }
-        }, 1000);
-    </script>
+    <div id="screenerror" class="error">
+        <div>
+            <p style="margin-left: 1vw;" class="bolded">ERROR!</p>
+            <p>Currently this screen resolution is buggy.</p>
+        </div>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <div id="gtabs1" class="sidebarOptions" style="gap: 1vw;" onclick="location.href='https://discord.gg/xuu8TnSY4b'">
+            <img src="./assets/images/sidebar/m-discord.png"><div class="gTabsText"><p>Discord</p></div>
+        </div>
+        <div onclick="webedition()" id="gtabs2" class="sidebarOptions selected">
+            <img src="./assets/images/sidebar/i-web.png">
+            <div class="gTabsText">
+                <p class="eaglercraftText"> EAGLERCRAFT : </p>
+                <p>Web Edition </p>
+            </div>
+        </div>
+        <div onclick="moddededition()" id="gtabs3" class="sidebarOptions">
+            <img src="./assets/images/sidebar/i-modded.png">
+            <div class="gTabsText">
+                <p class="eaglercraftText"> EAGLERCRAFT : </p>
+                <p>Modded Editions </p>
+            </div>
+        </div>
+        <div onclick="eaglercontrols()" id="gtabs4" class="sidebarOptions">
+            <img src="./assets/images/sidebar/i-controls.png">
+            <div class="gTabsText">
+                <p class="eaglercraftText"> EAGLERCRAFT : </p>
+                <p>Mobile/Controller </p>
+            </div>
+        </div>
+        <div id="gtabs5" class="sidebarOptions sidebarBottom" onclick="errorNA('credits')">
+            <img src="./assets/images/sidebar/m-credits.png"><div class="gTabsText"><p> Credits</p></div>
+        </div>
+        <div id="gtabs6" class="sidebarOptions sidebarBottom" onclick="errorNA('settings')">
+            <img src="./assets/images/sidebar/m-settings.png"><div class="gTabsText"><p> Settings</p></div>
+        </div>
+        <div class="launcherVersion"><p>v1.4.00</p></div>
+    </div>
+    <div class="mainPage">
+        <div class="gameHeader">
+            <p id="gameedition" class="currentGame bolded">EAGLERCRAFT WEB EDITION</p>
+                <ul class="gameTabs">
+                    <li id="header1" class="headerButtons selected" onclick="playheader()">Play</li>
+                    <li id="header2" style="display: none;" class="headerButtons" onclick="modsheader()">Mods</li>
+                    <li id="header3" class="headerButtons" onclick="faqsheader()">FAQ</li>
+                    <li id="header4" class="headerButtons" onclick="installationheader()">Installations</li>
+                    <li id="header5" class="headerButtons" onclick="errorNA('skins')">Skins</li>
+                    <li id="header6" class="headerButtons" onclick="patchnotesheader()">Patch Notes</li>
+                </ul>
+        </div>
+        <div id="mods">
+            <img class="modketplace-title" src="./assets/images/modketplace-title.png" alt="modketplace">
+            <p class="bolded modssubtitle">Community mods for the EaglerForge Installation.</p>
+            <div id="modsbox"></div>
+        </div>
+        <div id="faq">
+            <p class="bolded faqtitle">Frequently Asked Questions</p>
+            <p>Here are some frequently asked questions about Ampler Launcher.</p>
+            <div id="faqbox"></div>
+        </div>
+        <div id="installations"><div id="installationsbox"></div></div>
+        <div id="game-bg" style="background-image: url(./assets/images/web-edition.jpg);">
+            <img id="game-title" src="./assets/images/web-title.png" alt="eaglercraft">
+        </div>
+        <div id="patchNotes">
+            <div style="padding: 2vh 3vw 7vh;">
+                <p class="bolded patchnotes-title">Versions</p>
+                <div class="versionscontainer">
+                    <input class="versionBox" type="checkbox" onchange="sortnote('game')" checked><p>Game Releases</p><input class="versionBox" type="checkbox" onchange="sortnote('site')" checked><p>Site Releases</p>
+                </div>
+                <hr>
+                <div id="patchnotesbox"></div>
+            </div>
+        </div>
+        <div id="gameSelection">
+                <div class="dropdownSelector" onclick="dropdowntoggle()">
+                    <div style="display: flex; gap: 1vw;">
+                        <div class="centeredIcon">
+                            <img id="gameicon" src="./assets/images/mc-icons/grass.png" style="width: 2.5vw;" />
+                        </div>
+                        <div class="versionText">
+                            <p id="gametitle" class="bolded">Latest release</p>
+                            <p id="gameversion">1.12.2-u2</p>
+                        </div>
+                        <div id="dropdownuparrow" class="centeredIcon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                 viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round" class="dropdownIcon">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            <div id="dropdn" class="dropdownMenu" style="visibility: hidden;"></div>
+            <a id="playbutton" href="mc/1.12.2"><div id="mainbutton" class="playButton"></div></a>
+            <div class="username centeredIcon bolded"><p id="username">Generic User</p></div>
+        </div>
+    </div>
+    <script src="./js/index.js"></script>
 </body>
 </html>
