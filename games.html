@@ -1,0 +1,187 @@
+<h1>welcome to gamespage</h1>
+    <p>this is secret gamewebsite.</p>
+    <h4>popular games!</h4>
+    <div class="ticker"></div>
+    
+    <style>
+    .ticker {
+        display: flex;
+        gap: 15px;
+        overflow: hidden;
+        width: calc(100% - 2px);
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+    
+    .ticker-content {
+        display: flex;
+        gap: 15px;
+        animation: scroll 15s linear infinite;
+    }
+    
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); } /* scroll half since content is duplicated */
+    }
+    
+    .ticker button {
+        flex: 0 0 auto;
+    }
+    </style>
+    
+    <div class="ticker">
+        <div class="ticker-content" id="tickerContent"></div>
+    </div>
+    
+    <script>
+    // List of games
+    const games = [
+        { name: "drive mad", url: "https://welcometothiswebsite.github.io/games/drivemad" },
+        { name: "extreme run", url: "https://welcometothiswebsite.github.io/games/extremerun" },
+        { name: "fortzone battle royale", url: "https://welcometothiswebsite.github.io/games/fortzone" },
+        { name: "n-gon", url: "https://welcometothiswebsite.github.io/games/ngon" },
+        { name: "granny", url: "https://welcometothiswebsite.github.io/games/granny" },
+        { name: "cookie clicker", url: "https://welcometothiswebsite.github.io/games/cookieclicker" },
+        { name: "bitlife", url: "https://welcometothiswebsite.github.io/games/bitlife" },
+        { name: "geometry dash lite", url: "https://welcometothiswebsite.github.io/games/gdlite" },
+        { name: "geometry vibes", url: "https://welcometothiswebsite.github.io/games/gdvibes" },
+        { name: "duck life", url: "https://welcometothiswebsite.github.io/games/ducklife" },
+        { name: "escape road", url: "https://welcometothiswebsite.github.io/games/escaperoad" },
+        { name: "drift boss", url: "https://welcometothiswebsite.github.io/games/driftboss" },
+        { name: "ovo", url: "https://welcometothiswebsite.github.io/games/ovo" },
+        { name: "1v1.lol", url: "https://welcometothiswebsite.github.io/games/1v1" }
+    ];
+    
+    const tickerContent = document.getElementById("tickerContent");
+    
+    // Shuffle games
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    
+    // Render buttons (and duplicate for infinite scroll)
+    function renderTicker() {
+        tickerContent.innerHTML = "";
+        shuffleArray(games);
+    
+        // Create buttons
+        games.forEach(game => {
+            const btn = document.createElement("button");
+            btn.textContent = game.name;
+            btn.onclick = () => window.open(game.url, "_blank");
+            tickerContent.appendChild(btn);
+        });
+    
+        // Duplicate the same buttons for smooth infinite scrolling
+        games.forEach(game => {
+            const btn = document.createElement("button");
+            btn.textContent = game.name;
+            btn.onclick = () => window.open(game.url, "_blank");
+            tickerContent.appendChild(btn);
+        });
+    }
+    
+    renderTicker();
+    </script>
+    <p>all 80 games ↓</p>
+    <p>-1-</p>
+    <button onclick="window.location.href='games/1';">1</button>
+    <button onclick="window.location.href='games/1v1';">1v1.lol</button>
+    <p>-a-</p>
+    <button onclick="window.location.href='games/adarkroom';">a dark room</button>
+    <button onclick="window.location.href='games/adayintheoffice';">a day in the office</button>
+    <button onclick="window.location.href='games/agarlite';">agar lite</button>
+    <button onclick="window.location.href='games/amongus';">among us</button>
+    <button onclick="window.location.href='games/angrybirds';">angry birds</button>
+    <button onclick="window.location.href='games/appleworm';">apple worm</button>
+    <button onclick="window.location.href='games/asmallworldcup';">a small world cup</button>
+    <p>-b-</p>
+    <button onclick="window.location.href='games/backrooms';">backrooms</button>
+    <button onclick="window.location.href='games/badtimesim';">bad time simulator</button>
+    <button onclick="window.location.href='games/baldibasics';">baldi basics</button>
+    <button onclick="window.location.href='games/baseballbros';">baseball bros</button>
+    <button onclick="window.location.href='games/battlekarts';">battle karts</button>
+    <button onclick="window.location.href='games/bitlife';">bitlife</button>
+    <button onclick="window.location.href='games/blockblast';">block blast</button>
+    <p>-c-</p>
+    <button onclick="window.location.href='games/chess';">chess</button>
+    <button onclick="window.location.href='games/cookieclicker';">cookie clicker</button>
+    <button onclick="window.location.href='games/crossyroad';">crossy road</button>
+    <button onclick="window.location.href='games/chickenwar';">chicken war</button>
+    <button onclick="window.location.href='games/clusterrush';">cluster rush</button>
+    <p>-d-</p>
+    <button onclick="window.location.href='games/driftboss';">drift boss</button>
+    <button onclick="window.location.href='games/drifthunters';">drift hunters</button>
+    <button onclick="window.location.href='games/dogeminer';">doge miner</button>
+    <button onclick="window.location.href='games/dogeminer2';">doge miner 2</button>
+    <button onclick="window.location.href='games/drivemad';">drive mad</button>
+    <button onclick="window.location.href='games/ducklife';">duck life</button>
+    <p>-e-</p>
+    <button onclick="window.location.href='games/escaperoad';">escape road</button>
+    <button onclick="window.location.href='games/extremerun';">extreme run</button>
+    <button onclick="window.location.href='games/eggcar';">eggy car</button>
+    <p>-f-</p>
+    <button onclick="window.location.href='games/flappydunk';">flappy dunk</button>
+    <button onclick="window.location.href='games/footballbros';">football bros</button>
+    <button onclick="window.location.href='games/fortzone';">fortzone</button>
+    <button onclick="window.location.href='games/fruitninja';">fruit ninja</button>
+    <button onclick="window.location.href='games/fnf3d';">fnaf 3d</button>
+    <button onclick="window.location.href='games/fisquarium';">fisquarium</button>
+    <button onclick="window.location.href='games/finalninja';">final ninja</button>
+    <p>-g-</p>
+    <button onclick="window.location.href='games/gdlite';">geometry dash lite</button>
+    <button onclick="window.location.href='games/gdvibes';">geometry vibes</button>
+    <button onclick="window.location.href='games/goingballs';">going balls</button>
+    <button onclick="window.location.href='games/granny';">granny</button>
+    <button onclick="window.location.href='games/granny';">granny online</button>
+    <p>-h-</p>
+    <button onclick="window.location.href='games/holeio';">hole.io</button>
+    <button onclick="window.location.href='games/harvestio';">harvest.io</button>
+    <button onclick="window.location.href='games/highwayracer';">highway racer</button>
+    <button onclick="window.location.href='games/hyppersandbox';">hypper sandbox (might need to zoom out)</button>
+    <p>-i-</p>
+    <button onclick="window.location.href='games/idledice';">idle dice</button>
+    <button onclick="window.location.href='games/idlebreakout';">idle breakout</button>
+    <button onclick="window.location.href='games/idleminertycoon';">idle miner tycoon</button>
+    <button onclick="window.location.href='games/infinitecraft';">infinite craft</button>
+    <p>-j-</p>
+    <button onclick="window.location.href='games/justfall';">justfall.io</button>
+    <p>-k-</p>
+    <button onclick="window.location.href='games/kartbros';">kart bros</button>
+    <button onclick="window.location.href='games/karatebros';">karate bros</button>
+    <p>-l-</p>
+    <button onclick="window.location.href='games/leveldevil';">level devil</button>
+    <p>-m-</p>
+    <button onclick="window.location.href='games/moneyrush';">money rush</button>
+    <button onclick="window.location.href='games/monkeymart';">monkey mart</button>
+    <button onclick="window.location.href='games/melonplayground';">melon playground</button>
+    <p>-n-</p>
+    <button onclick="window.location.href='games/ngon';">n-gon</button>
+    <p>-o-</p>
+    <button onclick="window.location.href='games/ovo';">ovo</button>
+    <button onclick="window.location.href='games/ovo2';">ovo 2</button>
+    <button onclick="window.location.href='games/ovo3';">ovo 3 dimensions</button>
+    <button onclick="window.location.href='games/osu';">osu!</button>
+    <button onclick="window.location.href='games/onlyup';">only up</button>
+    <button onclick="window.location.href='games/onenightasfreddy';">one night as freddy</button>
+    <p>-p-</p>
+    <button onclick="window.location.href='games/paperio';">paper.io</button>
+    <button onclick="window.location.href='games/parkingrush';">parking rush</button>
+    <button onclick="window.location.href='games/perfecthotel';">perfect hotel</button>
+    <button onclick="window.location.href='games/polytrack';">poly track</button>
+    <p>-r-</p>
+    <button onclick="window.location.href='games/ragdollhit';">ragdoll hit</button>
+    <button onclick="window.location.href='games/redvsblue';">red vs blue</button>
+    <button onclick="window.location.href='games/redvsblue2';">red vs blue 2</button>
+    <button onclick="window.location.href='games/retrobowl';">retro bowl</button>
+    <button onclick="window.location.href='games/retrobowlcollege';">retro bowl college</button>
+    <button onclick="window.location.href='games/retrohighway';">retro highway</button>
+    <button onclick="window.location.href='games/retropingpong';">retro ping pong</button>
+    <button onclick="window.location.href='games/rooftopsniper';">rooftop sniper</button>
+    <footer style="text-align:center; padding:20px; font-size:14px; color:#555;">
+      © 2026 welcometothiswebsite. All rights reserved.<br>
+      <a href="/terms.html" style="color:#555; text-decoration:underline;">Terms of Use</a>
+    </footer>
