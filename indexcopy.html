@@ -1,80 +1,159 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta name="google-adsense-account" content="ca-pub-3277185640418528">
-    <meta name="keywords" content="unblocked games, games, online games, welcome to this website, welcometothiswebsite">
-    <meta name="description" content="Welcome to the my unblocked games website!">
-    <link rel="icon" type="image/x-icon" href="games/icon.png">
-    <title>secret homepage</title>
-    <style>
-        #countdown {
-            font-family: monospace;
-            font-size: 24px;
-            font-weight: bold;
-            color: #d32f2f; /* Red color to stand out */
-            margin: 10px 0;
-            display: block;
-        }
-        #visitor-counter {
-          position: fixed;
-          top: 10px;      /* distance from top */
-          right: 10px;    /* distance from right */
-          z-index: 1000;  /* ensure it stays on top */
-        }
-    </style>
-    <style>
-    /* catch any element inserted by SuperCounters and pin top‑right  */
-    body > *:not(script)[style*="counter"] {
-        position: fixed !important;
-        top: 10px !important;
-        right: 10px !important;
-        z-index: 9999 !important;
-    }
-    </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528"
-     crossorigin="anonymous"></script>
-    <script src="//widget.supercounters.com/ssl/online_i.js"></script>
-    <script>
-        sc_online_i(1726637,"ffffff","e61c1c");
-    </script>
-</head>
-<body>
-    <button onclick="window.location.href='/';">home</button>
-    <button onclick="window.location.href='games';">games</button>
-    <button onclick="window.location.href='proxyr';">proxy</button>
-    <button onclick="window.location.href='ai';">ai chatbot</button>
-    <h1>welcome to this website!</h1>
-    <p>hello! welcome to this website, in this website we make as much things possible for you to have fun!</p>
-    <p>i like coding! and i coded this website because coding for me is fun, and i can have no boredom!</p>
-    <p>please recommended this website to more people trying to get a goal of 17 online at once! for a big! update!</p>
-    <p>‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </p>
-    <span>enjoying? click here! --></span>
-    <a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
+    <head>
+        <meta name="google-adsense-account" content="ca-pub-3277185640418528">
+        <meta name="keywords" content="unblocked games, games, online games, welcome to this website, welcometothiswebsite">
+        <meta name="description" content="Welcome to the my unblocked games website!">
+        <link rel="icon" type="image/x-icon" href="games/icon.png">
+        <title>secret homepage</title>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528" crossorigin="anonymous"></script>
 
-    <script>
-        // Set target date for January 5, 2026
-        const targetDate = new Date("Jan 7, 2026 11:30:00").getTime();
-
-        const updateTimer = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            // Calculations for days, hours, minutes and seconds
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Display result
-            document.getElementById("countdown").innerHTML = 
-                days + "d : " + hours + "h : " + minutes + "m : " + seconds + "s";
-
-            // If the countdown is finished
-            if (distance < 0) {
-                clearInterval(updateTimer);
-                document.getElementById("countdown").innerHTML = "IT'S JANUARY 7TH!";
+        <style>
+            .games-row {
+                display: flex;
+                gap: 40px;
+                margin-bottom: 40px;
             }
-        }, 1000);
-    </script>
-</body>
+
+            .game-column {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 300px; /* adjust width of each game */
+            }
+
+            .game-column h5,
+            .game-column a {
+                margin: 5px 0;
+                text-align: center;
+            }
+
+            .game-column iframe {
+                width: 300px;
+                height: 180px;
+                border: 2px solid #000;
+            }
+        </style>
+    </head>
+
+    <body>
+        <button onclick="home()">home</button>
+        <button onclick="games()">Go Hidden</button>
+        <button onclick="proxy()">proxy</button>  
+        <button onclick="chatbot()">ai chatbot</button> 
+        <button onclick="settings()">⚒️</button> 
+        <script>
+          function home() {
+            const url = "https://welcometothiswebsite.github.io/"; // change this
+        
+            document.open();
+            document.write(`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <title>about:blank</title>
+              </head>
+              <body>
+                <iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>
+              </body>
+              </html>
+            `);
+            document.close();
+          }
+        </script>
+        <script>
+          function games() {
+            const url = "https://welcometothiswebsite.github.io/games"; // change this
+        
+            document.open();
+            document.write(`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <title>about:blank</title>
+              </head>
+              <body>
+                <iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>
+              </body>
+              </html>
+            `);
+            document.close();
+          }
+        </script>
+        <script>
+          function proxy() {
+            const url = "https://welcometothiswebsite.github.io/proxyr"; // change this
+        
+            document.open();
+            document.write(`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <title>about:blank</title>
+              </head>
+              <body>
+                <iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>
+              </body>
+              </html>
+            `);
+            document.close();
+          }
+        </script>
+        <script>
+          function chatbot() {
+            const url = "https://welcometothiswebsite.github.io/ai"; // change this
+        
+            document.open();
+            document.write(`
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <title>about:blank</title>
+              </head>
+              <body>
+                <iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>
+              </body>
+              </html>
+            `);
+            document.close();
+          }
+        </script>
+        <h1>welcome to this website!</h1> 
+        <p>hello! welcome to this website, in this website we make as much things possible for you to have fun!</p> 
+        <p>i like coding! and i coded this website because coding for me is fun, and i can have no boredom!</p> 
+        <p>please recommended this website to more people trying to get a goal of 17 online at once! for a big! update!</p> 
+
+        <span>enjoying? click here! --></span>
+        <a href="https://www.youtube.com/@josephasn">youtube.com/@josephasn</a>
+               <h4>custom games and stuff made by the owner:</h4> 
+        <div class="games-row">
+            <div class="game-column">
+                <h5>all the eaglercraft versions into one launcher</h5>
+                <p>[popular] made by owner</p>
+                <a href="https://welcometothiswebsite.github.io/launcher">click here to play</a>
+                <iframe src="https://welcometothiswebsite.github.io/launcher" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+            <div class="game-column">
+                <h5>the calculator game</h5>
+                <p>made by owner</p>
+                <a href="https://welcometothiswebsite.github.io/calculator">click here to play</a>
+                <iframe src="https://welcometothiswebsite.github.io/calculator" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+        </div>
+
+        <h4>updates! [Jan 29, 2026]</h4>
+        <p>added settings</p> 
+
+        <h4>updates coming soon!</h4> 
+        <p>adding chat soon</p>  
+        <p>adding youtube videos (for if youtube blocked)</p>
+
+        <h3>welcome to the secret homepage!</h3>
+        <p>hello! im a kid who decided to make this unblocked games website! i decided to make this website for me to have fun and also everyone else out there. in this website, i make unblocked games for people to play, proxy to search anonymously, and chatbot to assist you on anything! we have settings in this website for anything you need. first up is the hidden mode, hidden mode prevents any extentions from seeing what your doing! second up we have automatic hidden mode, each time you go into the website it automatically goes to an about:blank page! thats all the settings for now more will get added soon! hope you have fun!</p>
+
+        <footer style="text-align:center; padding:20px; font-size:14px; color:#555;">
+          © 2026 welcometothiswebsite. All rights reserved.<br>
+          <a href="/terms.html" style="color:#555; text-decoration:underline;">Terms of Use</a>
+        </footer>
+    </body>
 </html>
