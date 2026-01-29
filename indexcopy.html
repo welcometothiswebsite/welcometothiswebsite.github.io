@@ -174,6 +174,39 @@
               document.close();
             }
         </script>
+        <script>
+          function settings() {
+              const url = "https://welcometothiswebsite.github.io/settings";
+            
+              document.open();
+              document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <title>about:blank</title>
+                  <style>
+                    html, body {
+                      margin: 0;
+                      padding: 0;
+                      width: 100%;
+                      height: 100%;
+                      overflow: hidden;
+                    }
+                    iframe {
+                      width: 100%;
+                      height: 100%;
+                      border: none;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <iframe src="${url}"></iframe>
+                </body>
+                </html>
+              `);
+              document.close();
+            }
+        </script>
         <h1>welcome to this website!</h1> 
         <p>hello! welcome to this website, in this website we make as much things possible for you to have fun!</p> 
         <p>i like coding! and i coded this website because coding for me is fun, and i can have no boredom!</p> 
