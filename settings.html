@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hidden Mode Settings</title>
+</head>
+<body>
+
+<h1>Settings</h1>
+
+<h3>Hidden Mode</h3>
+<p>
+Hidden Mode temporarily opens a website inside an about:blank page.
+When enabled, it activates once and then automatically turns itself off.
+</p>
+<label>
+  <input type="checkbox" id="hiddenToggle">
+  Enable Hidden Mode
+</label>
+
+<hr>
+
+<h3>Auto Hidden Mode</h3>
+<p>
+Auto Hidden Mode automatically opens the website inside an about:blank page
+every time this page is loaded. You can disable it at any time.
+</p>
+<label>
+  <input type="checkbox" id="autoHiddenToggle">
+  Enable Auto Hidden Mode
+</label>
+
+<script>
+  const TARGET_URL = "https://welcometothiswebsite.github.io/indexcopy"; // change this
+
+  const hiddenToggle = document.getElementById("hiddenToggle");
+  const autoHiddenToggle = document.getElementById("autoHiddenToggle");
+
+  // Load saved setting
+  autoHiddenToggle.checked = localStorage.getItem("autoHidden") === "true";
+
+  // Auto Hidden Mode on page load
+  if (autoHiddenToggle.checked) {
+    openHidden();
+  }
+
+  hiddenToggle.addEventListener("change", () => {
+    if (hiddenToggle.checked) {
+      openHidden();
+      hiddenToggle.checked = false; // auto turn off
+    }
+  });
+
+  autoHiddenToggle.addEventListener("change", () => {
+    localStorage.setItem("autoHidden", autoHiddenToggle.checked);
+  });
+
+  function openHidden() {
+    const win = window.open();
+    win.document.write(`
+      <iframe src="${TARGET_URL}"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; border:none;">
+      </iframe>
+    `);
+    win.document.close();
+  }
+</script>
+
+</body>
+</html>
