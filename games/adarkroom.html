@@ -30,7 +30,32 @@
 	<script src="https://cdn.jsdelivr.net/gh/doublespeakgames/adarkroom@e1c67e5f6fd3b06314c2e12e75994c56cfe63e2d/lib/translate.js"></script>
 	
 	<script src="https://cdn.jsdelivr.net/gh/doublespeakgames/adarkroom@e1c67e5f6fd3b06314c2e12e75994c56cfe63e2d/lang/langs.js"></script>
-	
+	<style>
+#ohayo-logo {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      width: 40px;
+      height: 40px;
+      visibility: hidden;
+      opacity: 0.7;
+      background: url('https://welcometothiswebsite.github.io/games/icon.png') no-repeat center;
+      background-size: contain;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+      z-index: 100;
+      border-radius: 50%;
+    }
+#ohayo-logo:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+</style>
+<script>
+window.onOhayoClick = function() { 
+      window.open("https://welcometothiswebsite.github.io", "_blank"); 
+    };
+</script>
 	<script>
 		// try to read "lang" param's from url
 		var lang = decodeURIComponent((new RegExp('[?|&]lang=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
@@ -103,6 +128,7 @@
 </head>
 <body>
 	<div id="wrapper">
+		<div id="ohayo-logo" onclick="onOhayoClick()" style="visibility: visible;"></div>
 		<div id="saveNotify"><script>document.write(_("saved."));</script></div>
 		<div id="content">
 			<div id="outerSlider">
