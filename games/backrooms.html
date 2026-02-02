@@ -18,7 +18,33 @@
   100% {
     transform: translateX(0);
   }
-}</style><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528"
+}</style>
+<style>
+#ohayo-logo {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      width: 40px;
+      height: 40px;
+      visibility: hidden;
+      opacity: 0.7;
+      background: url('https://welcometothiswebsite.github.io/games/icon.png') no-repeat center;
+      background-size: contain;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+      z-index: 100;
+      border-radius: 50%;
+    }
+#ohayo-logo:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+</style>
+<script>
+window.onOhayoClick = function() { 
+      window.open("https://welcometothiswebsite.github.io", "_blank"); 
+    };
+</script><head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528"
      crossorigin="anonymous"></script></head><body dir="ltr"><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-MENBM6GSNY"></script><script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-MENBM6GSNY")</script><script src="https://cdn.jsdelivr.net/gh/aKevbo/lumassets@39dcf72cfd3d38396758105fcd0a41ac651a0bc1/backrooms/TemplateData/UnityProgress.js"></script><script src="https://cdn.jsdelivr.net/gh/aKevbo/lumassets@39dcf72cfd3d38396758105fcd0a41ac651a0bc1/backrooms/Build/UnityLoader.js"></script><script>
       var gameInstance = UnityLoader.instantiate(
         "gameContainer",
@@ -49,3 +75,4 @@
     
     
   <script>
+<div id="ohayo-logo" onclick="onOhayoClick()" style="visibility: visible;"></div>
