@@ -11,14 +11,40 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3277185640418528"
      crossorigin="anonymous"></script>
-
         <meta name="HandheldFriendly" content="True" />
         <meta name="MobileOptimized" content="320" />
         <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui" />
     </head>
     <script src="/js/main.js"></script>
+    <style>
+        #ohayo-logo {
+              position: absolute;
+              left: 16px;
+              bottom: 16px;
+              width: 40px;
+              height: 40px;
+              visibility: hidden;
+              opacity: 0.7;
+              background: url('https://welcometothiswebsite.github.io/games/icon.png') no-repeat center;
+              background-size: contain;
+              transition: opacity 0.2s ease, transform 0.2s ease;
+              cursor: pointer;
+              z-index: 100;
+              border-radius: 50%;
+            }
+        #ohayo-logo:hover {
+              opacity: 1;
+              transform: scale(1.05);
+            }
+    </style>
+    <script>
+    window.onOhayoClick = function() { 
+          window.open("https://welcometothiswebsite.github.io", "_blank"); 
+        };
+    </script>
     <body>
         <div class="container">
+            <div id="ohayo-logo" onclick="onOhayoClick()" style="visibility: visible;"></div>
             <div class="heading">
                 <h1 class="title">1</h1>
                 <div class="scores-container">
