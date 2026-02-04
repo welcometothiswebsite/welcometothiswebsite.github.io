@@ -1,0 +1,19 @@
+#ohayo-logo {
+      position: absolute;
+      left: 16px;
+      bottom: 50px;
+      width: 40px;
+      height: 40px;
+      visibility: hidden;
+      opacity: 0.7;
+      background: url('https://welcometothiswebsite.github.io/games/icon2.png') no-repeat center;
+      background-size: contain;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+      z-index: 100;
+      border-radius: 50%;
+    }
+#ohayo-logo:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
