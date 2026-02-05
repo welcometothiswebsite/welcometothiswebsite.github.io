@@ -1,4 +1,4 @@
-// === FIXED REAL-TIME CHAT ===
+// === FIXED REAL-TIME CHAT - SHOW NEWEST MESSAGES ONLY ===
 class DiscordChat {
     constructor() {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoYUoRPsMDO31zE3q5GZ2kwyrrHs8Uj5pKnAOiBJAuU9y5fs51olo3QtBNVND8d74T/exec';
@@ -6,7 +6,8 @@ class DiscordChat {
         this.currentChannel = 'general';
         this.refreshInterval = null;
         this.lastMessageTime = null;
-        this.lastLoadedMessageIds = new Set(); // Track loaded message IDs
+        this.displayedMessageIds = new Set(); // Track displayed message IDs
+        this.MAX_MESSAGES = 50; // Show max 50 messages in chat
         
         this.init();
     }
@@ -84,11 +85,27 @@ class DiscordChat {
         this.addSystemMessage(`Welcome ${username}! 👋`);
         this.addSystemMessage('Chat refreshes every 5 seconds to show new messages.');
         
-        // Load existing messages
-        await this.loadMessages();
+        // Send "user joined" message to system channel
+        await this.sendJoinMessage(username);
+        
+        // Load initial messages (newest 10)
+        await this.loadInitialMessages();
         
         // Start auto-refresh
         this.startAutoRefresh();
+    }
+
+    async sendJoinMessage(username) {
+        try {
+            await this.sendToGoogleSheets({
+                action: 'send',
+                username: 'System',
+                channel: 'system',
+                message: `${username} joined the chat`
+            });
+        } catch (error) {
+            console.log('Could not send join message:', error);
+        }
     }
 
     async sendMessage() {
@@ -139,12 +156,12 @@ class DiscordChat {
         });
     }
 
-    async loadMessages() {
+    async loadInitialMessages() {
         if (!this.user) return;
 
         try {
-            // Clear tracked message IDs for this channel
-            this.lastLoadedMessageIds.clear();
+            // Clear displayed message IDs
+            this.displayedMessageIds.clear();
             
             // Try to load via API
             const response = await fetch(this.SCRIPT_URL, {
@@ -163,37 +180,30 @@ class DiscordChat {
             const data = await response.json();
             
             if (data.success && data.messages) {
-                // Clear all messages (including system)
+                // Clear all messages
                 this.elements.messagesContainer.innerHTML = '';
                 
                 // Add welcome messages back
                 this.addSystemMessage(`Welcome ${this.user.username}! 👋`);
                 this.addSystemMessage('Chat refreshes every 5 seconds to show new messages.');
                 
-                // Sort messages by timestamp (oldest first)
-                const sortedMessages = [...data.messages].sort((a, b) => {
+                // Get the NEWEST 10 messages (backend already returns newest first)
+                const newestMessages = data.messages.slice(0, 20); // Get top 20 newest
+                
+                // Sort them by timestamp (oldest first for display)
+                const sortedMessages = [...newestMessages].sort((a, b) => {
                     return new Date(a.timestamp) - new Date(b.timestamp);
                 });
                 
-                // Add messages from server in correct order
+                // Add messages to chat
                 sortedMessages.forEach(msg => {
-                    const isOwn = msg.username === this.user.username;
-                    this.addMessage({
-                        id: msg.id,
-                        username: msg.username,
-                        message: msg.message,
-                        time: this.formatTime(new Date(msg.timestamp || Date.now())),
-                        channel: msg.channel
-                    }, isOwn, false); // Don't scroll for each message
-                    
-                    // Track this message ID
-                    this.lastLoadedMessageIds.add(msg.id);
+                    this.processIncomingMessage(msg);
                 });
                 
-                // Scroll to bottom after loading all messages
+                // Scroll to bottom
                 this.scrollToBottom();
                 
-                this.showNotification(`Loaded ${sortedMessages.length} messages`, 'success');
+                this.showNotification(`Loaded ${newestMessages.length} messages`, 'success');
                 
             } else {
                 this.addSystemMessage('No messages found or server error');
@@ -223,44 +233,65 @@ class DiscordChat {
             const data = await response.json();
             
             if (data.success && data.messages && data.messages.length > 0) {
-                // Sort messages by timestamp (oldest first)
-                const sortedMessages = [...data.messages].sort((a, b) => {
-                    return new Date(a.timestamp) - new Date(b.timestamp);
-                });
+                // Get only the newest messages (first 10 from backend)
+                const newestMessages = data.messages.slice(0, 10);
                 
                 let newCount = 0;
-                sortedMessages.forEach(msg => {
+                newestMessages.forEach(msg => {
                     // Check if this message is already displayed
-                    if (!this.lastLoadedMessageIds.has(msg.id)) {
-                        const isOwn = msg.username === this.user.username;
-                        this.addMessage({
-                            id: msg.id,
-                            username: msg.username,
-                            message: msg.message,
-                            time: this.formatTime(new Date(msg.timestamp || Date.now())),
-                            channel: msg.channel
-                        }, isOwn, false); // Don't scroll for each message
-                        
-                        // Track this new message ID
-                        this.lastLoadedMessageIds.add(msg.id);
+                    if (!this.displayedMessageIds.has(msg.id)) {
+                        this.processIncomingMessage(msg);
                         newCount++;
                     }
                 });
                 
-                if (newCount > 0) {
-                    // Scroll only if user is at bottom
-                    if (this.isAtBottom()) {
-                        this.scrollToBottom();
-                    }
-                    // Show notification if not at bottom
-                    if (!this.isAtBottom() && newCount > 0) {
-                        this.showNotification(`${newCount} new message${newCount > 1 ? 's' : ''}`);
-                    }
+                // Remove old messages if we have too many
+                this.limitMessagesDisplayed();
+                
+                if (newCount > 0 && this.isAtBottom()) {
+                    this.scrollToBottom();
                 }
             }
             
         } catch (error) {
             console.log('Check new messages error:', error);
+        }
+    }
+
+    processIncomingMessage(msg) {
+        // Check if this is a system message (channel = 'system')
+        if (msg.channel === 'system') {
+            // Display as system message
+            this.addSystemMessage(msg.message);
+        } else {
+            // Regular message
+            const isOwn = msg.username === this.user.username;
+            this.addMessage({
+                id: msg.id,
+                username: msg.username,
+                message: msg.message,
+                time: this.formatTime(new Date(msg.timestamp || Date.now())),
+                channel: msg.channel
+            }, isOwn, false); // Don't scroll for each message
+        }
+        
+        // Track this message ID
+        this.displayedMessageIds.add(msg.id);
+    }
+
+    limitMessagesDisplayed() {
+        const messages = this.elements.messagesContainer.querySelectorAll('.message');
+        if (messages.length > this.MAX_MESSAGES) {
+            // Remove oldest messages (skip system messages if needed)
+            const toRemove = messages.length - this.MAX_MESSAGES;
+            for (let i = 0; i < toRemove; i++) {
+                const msg = messages[i];
+                const id = msg.id.replace('msg-', '');
+                if (id) {
+                    this.displayedMessageIds.delete(id);
+                }
+                msg.remove();
+            }
         }
     }
 
@@ -294,11 +325,12 @@ class DiscordChat {
         this.elements.messageInput.placeholder = `Message #${channel}`;
         this.elements.messageInput.focus();
         
-        // Clear tracked messages for old channel
-        this.lastLoadedMessageIds.clear();
+        // Clear displayed messages for old channel
+        this.displayedMessageIds.clear();
+        this.elements.messagesContainer.innerHTML = '';
         
         // Load messages for new channel
-        this.loadMessages();
+        this.loadInitialMessages();
         
         this.addSystemMessage(`Switched to #${channel}`);
     }
@@ -325,6 +357,7 @@ class DiscordChat {
             </div>
         `;
 
+        // Append to container (new messages go to bottom)
         this.elements.messagesContainer.appendChild(messageDiv);
         
         // Only auto-scroll if at bottom and shouldScroll is true
@@ -349,7 +382,6 @@ class DiscordChat {
         `;
 
         this.elements.messagesContainer.appendChild(messageDiv);
-        this.scrollToBottom();
     }
 
     formatTime(date) {
