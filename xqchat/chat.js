@@ -1,11 +1,11 @@
-// === REAL-TIME CHAT WITH LOAD FUNCTION ===
+// === FIXED REAL-TIME CHAT ===
 class DiscordChat {
     constructor() {
-        this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrcBoJ7QVjm9ZpR3NHE6pWzwiWh033C9wTGZv6QCXVKSzHR-hNJNg9LRk4yG7zywrI/exec';
+        this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoYUoRPsMDO31zE3q5GZ2kwyrrHs8Uj5pKnAOiBJAuU9y5fs51olo3QtBNVND8d74T/exec';
         this.user = null;
         this.currentChannel = 'general';
         this.refreshInterval = null;
-        this.displayedMessages = new Set();
+        this.lastMessageTime = null;
         
         this.init();
     }
@@ -81,21 +81,13 @@ class DiscordChat {
         this.elements.messageInput.focus();
         
         this.addSystemMessage(`Welcome ${username}! 👋`);
-        this.addSystemMessage('Chat refreshes every 3 seconds to show new messages.');
+        this.addSystemMessage('Chat refreshes every 5 seconds to show new messages.');
         
         // Load existing messages
         await this.loadMessages();
         
         // Start auto-refresh
         this.startAutoRefresh();
-        
-        // Send join message
-        this.sendToGoogleSheets({
-            action: 'send',
-            username: username,
-            channel: 'system',
-            message: `${username} joined the chat`
-        });
     }
 
     async sendMessage() {
@@ -106,9 +98,8 @@ class DiscordChat {
 
         // Create message
         const now = new Date();
-        const messageId = 'msg_' + Date.now();
         const message = {
-            id: messageId,
+            id: 'msg_' + Date.now(),
             username: this.user.username,
             message: messageText,
             time: this.formatTime(now),
@@ -117,7 +108,6 @@ class DiscordChat {
 
         // Add to chat immediately
         this.addMessage(message, true);
-        this.displayedMessages.add(messageId);
         
         // Clear input
         this.elements.messageInput.value = '';
@@ -133,6 +123,7 @@ class DiscordChat {
             });
             
             this.showNotification('Message sent ✓');
+            this.lastMessageTime = Date.now();
             
         } catch (error) {
             this.showNotification('Failed to send', 'error');
@@ -151,6 +142,26 @@ class DiscordChat {
         if (!this.user) return;
 
         try {
+            // FIRST: Save current scroll position
+            const scrollPos = this.elements.messagesContainer.scrollTop;
+            const atBottom = this.isAtBottom();
+            
+            // Save current messages (except system)
+            const currentMessages = [];
+            const children = Array.from(this.elements.messagesContainer.children);
+            
+            for (let child of children) {
+                const authorEl = child.querySelector('.message-author');
+                if (authorEl && authorEl.textContent !== 'System') {
+                    const id = child.id.replace('msg-', '');
+                    currentMessages.push({
+                        id: id,
+                        element: child
+                    });
+                }
+            }
+            
+            // Try to load via API
             const response = await fetch(this.SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -160,43 +171,47 @@ class DiscordChat {
                 })
             });
             
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+            
             const data = await response.json();
             
             if (data.success && data.messages) {
-                // Clear existing user messages, keep system messages
-                const systemMessages = [];
-                const children = Array.from(this.elements.messagesContainer.children);
-                
-                for (let child of children) {
-                    const author = child.querySelector('.message-author');
-                    if (author && author.textContent === 'System') {
-                        systemMessages.push(child);
-                    }
-                }
-                
-                this.elements.messagesContainer.innerHTML = '';
-                systemMessages.forEach(msg => this.elements.messagesContainer.appendChild(msg));
-                
-                // Add messages from server (newest first)
-                data.messages.forEach(msg => {
-                    if (!this.displayedMessages.has(msg.id)) {
-                        const isOwn = msg.username === this.user.username;
-                        this.addMessage({
-                            id: msg.id,
-                            username: msg.username,
-                            message: msg.message,
-                            time: this.formatTime(new Date(msg.timestamp)),
-                            channel: msg.channel
-                        }, isOwn);
-                        this.displayedMessages.add(msg.id);
+                // Clear non-system messages
+                this.elements.messagesContainer.querySelectorAll('.message').forEach(msg => {
+                    const author = msg.querySelector('.message-author');
+                    if (author && author.textContent !== 'System') {
+                        msg.remove();
                     }
                 });
                 
-                this.scrollToBottom();
+                // Add messages from server
+                data.messages.forEach(msg => {
+                    const isOwn = msg.username === this.user.username;
+                    this.addMessage({
+                        id: msg.id,
+                        username: msg.username,
+                        message: msg.message,
+                        time: this.formatTime(new Date(msg.timestamp || Date.now())),
+                        channel: msg.channel
+                    }, isOwn);
+                });
+                
+                // Restore scroll position
+                if (!atBottom) {
+                    this.elements.messagesContainer.scrollTop = scrollPos;
+                }
+                
+                this.showNotification(`Loaded ${data.messages.length} messages`, 'success');
+                
+            } else {
+                this.addSystemMessage('No messages found or server error');
             }
             
         } catch (error) {
             console.log('Load error:', error);
+            this.addSystemMessage('Could not load messages');
         }
     }
 
@@ -213,27 +228,35 @@ class DiscordChat {
                 })
             });
             
+            if (!response.ok) return;
+            
             const data = await response.json();
             
-            if (data.success && data.messages) {
-                let newMessages = false;
+            if (data.success && data.messages && data.messages.length > 0) {
+                // Get current message IDs
+                const currentIds = new Set();
+                this.elements.messagesContainer.querySelectorAll('.message').forEach(msg => {
+                    const id = msg.id.replace('msg-', '');
+                    if (id) currentIds.add(id);
+                });
                 
+                // Add new messages
+                let newCount = 0;
                 data.messages.forEach(msg => {
-                    if (!this.displayedMessages.has(msg.id)) {
+                    if (!currentIds.has(msg.id)) {
                         const isOwn = msg.username === this.user.username;
                         this.addMessage({
                             id: msg.id,
                             username: msg.username,
                             message: msg.message,
-                            time: this.formatTime(new Date(msg.timestamp)),
+                            time: this.formatTime(new Date(msg.timestamp || Date.now())),
                             channel: msg.channel
                         }, isOwn);
-                        this.displayedMessages.add(msg.id);
-                        newMessages = true;
+                        newCount++;
                     }
                 });
                 
-                if (newMessages) {
+                if (newCount > 0 && this.isAtBottom()) {
                     this.scrollToBottom();
                 }
             }
@@ -243,15 +266,20 @@ class DiscordChat {
         }
     }
 
+    isAtBottom() {
+        const container = this.elements.messagesContainer;
+        return container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+    }
+
     startAutoRefresh() {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
         }
         
-        // Check for new messages every 3 seconds
+        // Check for new messages every 5 seconds
         this.refreshInterval = setInterval(() => {
             this.checkForNewMessages();
-        }, 3000);
+        }, 5000);
     }
 
     switchChannel(channel) {
@@ -268,9 +296,6 @@ class DiscordChat {
         this.elements.messageInput.placeholder = `Message #${channel}`;
         this.elements.messageInput.focus();
         
-        // Clear displayed messages for new channel
-        this.displayedMessages.clear();
-        
         // Load messages for new channel
         this.loadMessages();
         
@@ -278,6 +303,9 @@ class DiscordChat {
     }
 
     addMessage(message, isOwn = false) {
+        // Check if message already exists
+        if (document.getElementById('msg-' + message.id)) return;
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
         messageDiv.id = 'msg-' + message.id;
@@ -297,7 +325,11 @@ class DiscordChat {
         `;
 
         this.elements.messagesContainer.appendChild(messageDiv);
-        this.scrollToBottom();
+        
+        // Only auto-scroll if at bottom
+        if (this.isAtBottom()) {
+            this.scrollToBottom();
+        }
     }
 
     addSystemMessage(text) {
@@ -328,7 +360,8 @@ class DiscordChat {
 
     scrollToBottom() {
         setTimeout(() => {
-            this.elements.messagesContainer.scrollTop = this.elements.messagesContainer.scrollHeight;
+            const container = this.elements.messagesContainer;
+            container.scrollTop = container.scrollHeight;
         }, 100);
     }
 
