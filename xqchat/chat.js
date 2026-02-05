@@ -1,8 +1,12 @@
+// === REAL-TIME CHAT WITH AUTO-REFRESH ===
 class DiscordChat {
     constructor() {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoYUoRPsMDO31zE3q5GZ2kwyrrHs8Uj5pKnAOiBJAuU9y5fs51olo3QtBNVND8d74T/exec';
         this.user = null;
         this.currentChannel = 'general';
+        this.lastMessageId = null;
+        this.refreshInterval = null;
+        this.messageCache = new Set(); // Track displayed messages
         
         this.init();
     }
@@ -56,7 +60,7 @@ class DiscordChat {
         });
     }
 
-    login() {
+    async login() {
         const username = this.elements.usernameInput.value.trim();
         
         if (!username || username.length < 2) {
@@ -86,9 +90,15 @@ class DiscordChat {
         this.elements.messageInput.focus();
         
         this.addSystemMessage(`Welcome ${username}! 👋`);
-        this.addSystemMessage('All messages are saved to Google Sheets automatically.');
+        this.addSystemMessage('Chat refreshes every 3 seconds to show new messages.');
         
-        // Send test message to verify
+        // Load initial messages
+        await this.loadMessages();
+        
+        // Start auto-refresh
+        this.startAutoRefresh();
+        
+        // Send join notification
         this.sendToGoogleSheets({
             action: 'send',
             username: username,
@@ -97,7 +107,7 @@ class DiscordChat {
         });
     }
 
-    sendMessage() {
+    async sendMessage() {
         if (!this.user) return;
 
         const messageText = this.elements.messageInput.value.trim();
@@ -105,75 +115,206 @@ class DiscordChat {
 
         // Create message
         const now = new Date();
+        const messageId = 'msg_' + Date.now();
         const message = {
-            id: 'msg_' + Date.now(),
+            id: messageId,
             username: this.user.username,
             message: messageText,
             time: this.formatTime(now),
             channel: this.currentChannel
         };
 
-        // Add to chat
+        // Add to chat immediately (optimistic update)
         this.addMessage(message, true);
+        this.messageCache.add(messageId);
+        this.lastMessageId = messageId;
         
         // Clear input
         this.elements.messageInput.value = '';
         this.elements.sendButton.disabled = true;
         
-        // Send to Google Sheets - CORRECT JSON FORMAT
-        this.sendToGoogleSheets({
-            action: 'send',
-            username: this.user.username,
-            channel: this.currentChannel,
-            message: messageText
-        });
-        
-        this.showNotification('Message sent ✓');
+        // Save to Google Sheets
+        try {
+            await this.sendToGoogleSheets({
+                action: 'send',
+                username: this.user.username,
+                channel: this.currentChannel,
+                message: messageText
+            });
+            
+            this.showNotification('Message sent ✓');
+            
+        } catch (error) {
+            this.showNotification('Failed to send', 'error');
+        }
     }
 
-    sendToGoogleSheets(data) {
-        // METHOD 1: Direct fetch with JSON
-        fetch(this.SCRIPT_URL, {
+    async sendToGoogleSheets(data) {
+        return fetch(this.SCRIPT_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'no-cors', // Bypass CORS
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
-        }).catch(() => {
-            // If fetch fails, use form method
-            this.sendViaForm(data);
         });
     }
 
-    sendViaForm(data) {
-        // METHOD 2: Form with JSON in textarea
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = this.SCRIPT_URL;
-        form.target = 'hidden-frame';
-        form.style.display = 'none';
-        
-        // Add JSON as raw text in textarea
-        const textarea = document.createElement('textarea');
-        textarea.name = 'postData';
-        textarea.textContent = JSON.stringify(data);
-        form.appendChild(textarea);
-        
-        // Submit
-        document.body.appendChild(form);
-        form.submit();
-        
-        setTimeout(() => {
-            if (form.parentNode) {
-                document.body.removeChild(form);
+    async loadMessages() {
+        if (!this.user) return;
+
+        try {
+            // Load messages from Google Sheets
+            const response = await fetch(this.SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'load',
+                    channel: this.currentChannel
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success && data.messages) {
+                // Clear chat but keep system messages
+                const systemMessages = Array.from(this.elements.messagesContainer.children)
+                    .filter(el => el.querySelector('.message-author')?.textContent === 'System');
+                
+                this.elements.messagesContainer.innerHTML = '';
+                systemMessages.forEach(msg => this.elements.messagesContainer.appendChild(msg));
+                
+                // Add all messages from server
+                let foundLastMessage = false;
+                data.messages.forEach(msg => {
+                    if (!this.messageCache.has(msg.id)) {
+                        const isOwn = msg.username === this.user.username;
+                        this.addMessage({
+                            id: msg.id,
+                            username: msg.username,
+                            message: msg.message,
+                            time: this.formatTime(new Date(msg.timestamp)),
+                            channel: msg.channel
+                        }, isOwn);
+                        this.messageCache.add(msg.id);
+                        
+                        if (!this.lastMessageId) {
+                            this.lastMessageId = msg.id;
+                        }
+                    }
+                    
+                    if (msg.id === this.lastMessageId) {
+                        foundLastMessage = true;
+                    }
+                });
+                
+                // Update last message ID if we didn't find it (new channel)
+                if (!foundLastMessage && data.messages.length > 0) {
+                    this.lastMessageId = data.messages[0].id;
+                }
+                
+                this.scrollToBottom();
             }
-        }, 100);
+            
+        } catch (error) {
+            console.log('Load error:', error);
+        }
+    }
+
+    async checkForNewMessages() {
+        if (!this.user || !this.lastMessageId) return;
+
+        try {
+            const response = await fetch(this.SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'load',
+                    channel: this.currentChannel,
+                    since: this.lastMessageId
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success && data.messages && data.messages.length > 0) {
+                let newMessages = false;
+                
+                // Check if there are messages newer than our last known
+                for (const msg of data.messages) {
+                    if (!this.messageCache.has(msg.id)) {
+                        const isOwn = msg.username === this.user.username;
+                        this.addMessage({
+                            id: msg.id,
+                            username: msg.username,
+                            message: msg.message,
+                            time: this.formatTime(new Date(msg.timestamp)),
+                            channel: msg.channel
+                        }, isOwn);
+                        this.messageCache.add(msg.id);
+                        newMessages = true;
+                        
+                        // Update last message ID
+                        this.lastMessageId = msg.id;
+                    }
+                }
+                
+                if (newMessages) {
+                    this.scrollToBottom();
+                }
+            }
+            
+        } catch (error) {
+            console.log('Check new messages error:', error);
+        }
+    }
+
+    startAutoRefresh() {
+        // Clear existing interval
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+        
+        // Check for new messages every 3 seconds
+        this.refreshInterval = setInterval(() => {
+            this.checkForNewMessages();
+        }, 3000);
+        
+        console.log('Auto-refresh started: checking every 3 seconds');
+    }
+
+    stopAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
+    }
+
+    switchChannel(channel) {
+        if (channel === this.currentChannel) return;
+        
+        // Update UI
+        document.querySelectorAll('.channel-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-channel="${channel}"]`).classList.add('active');
+        
+        this.currentChannel = channel;
+        this.elements.currentChannelEl.textContent = channel;
+        this.elements.messageInput.placeholder = `Message #${channel}`;
+        this.elements.messageInput.focus();
+        
+        // Clear message cache for new channel
+        this.messageCache.clear();
+        this.lastMessageId = null;
+        
+        // Load messages for new channel
+        this.loadMessages();
+        
+        this.addSystemMessage(`Switched to #${channel}`);
     }
 
     addMessage(message, isOwn = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
+        messageDiv.id = 'msg-' + message.id;
         
         const avatarText = message.username.charAt(0).toUpperCase();
         const avatarColor = isOwn ? '#5865f2' : '#3ba55d';
@@ -210,23 +351,6 @@ class DiscordChat {
 
         this.elements.messagesContainer.appendChild(messageDiv);
         this.scrollToBottom();
-    }
-
-    switchChannel(channel) {
-        if (channel === this.currentChannel) return;
-        
-        // Update UI
-        document.querySelectorAll('.channel-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        document.querySelector(`[data-channel="${channel}"]`).classList.add('active');
-        
-        this.currentChannel = channel;
-        this.elements.currentChannelEl.textContent = channel;
-        this.elements.messageInput.placeholder = `Message #${channel}`;
-        this.elements.messageInput.focus();
-        
-        this.addSystemMessage(`Switched to #${channel}`);
     }
 
     formatTime(date) {
