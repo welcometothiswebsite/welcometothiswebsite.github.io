@@ -1,4 +1,4 @@
-// === FIXED REAL-TIME CHAT - SHOW NEWEST MESSAGES ONLY ===
+// === FIXED REAL-TIME CHAT WITH DEBUG ===
 class DiscordChat {
     constructor() {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoYUoRPsMDO31zE3q5GZ2kwyrrHs8Uj5pKnAOiBJAuU9y5fs51olo3QtBNVND8d74T/exec';
@@ -6,8 +6,8 @@ class DiscordChat {
         this.currentChannel = 'general';
         this.refreshInterval = null;
         this.lastMessageTime = null;
-        this.displayedMessageIds = new Set(); // Track displayed message IDs
-        this.MAX_MESSAGES = 50; // Show max 50 messages in chat
+        this.displayedMessageIds = new Set();
+        this.debugMode = true; // Enable debug
         
         this.init();
     }
@@ -88,8 +88,8 @@ class DiscordChat {
         // Send "user joined" message to system channel
         await this.sendJoinMessage(username);
         
-        // Load initial messages (newest 10)
-        await this.loadInitialMessages();
+        // Load initial messages
+        await this.loadAllMessages();
         
         // Start auto-refresh
         this.startAutoRefresh();
@@ -103,6 +103,7 @@ class DiscordChat {
                 channel: 'system',
                 message: `${username} joined the chat`
             });
+            this.debugLog('Sent join message for:', username);
         } catch (error) {
             console.log('Could not send join message:', error);
         }
@@ -142,9 +143,11 @@ class DiscordChat {
             
             this.showNotification('Message sent ✓');
             this.lastMessageTime = Date.now();
+            this.debugLog('Message saved to sheets:', messageText.substring(0, 20));
             
         } catch (error) {
             this.showNotification('Failed to send', 'error');
+            this.debugLog('Save error:', error.message);
         }
     }
 
@@ -156,10 +159,13 @@ class DiscordChat {
         });
     }
 
-    async loadInitialMessages() {
+    async loadAllMessages() {
         if (!this.user) return;
 
         try {
+            this.debugLog('=== LOADING ALL MESSAGES ===');
+            this.debugLog('Channel:', this.currentChannel);
+            
             // Clear displayed message IDs
             this.displayedMessageIds.clear();
             
@@ -169,15 +175,18 @@ class DiscordChat {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'load',
-                    channel: this.currentChannel
+                    channel: 'all'  // Load ALL messages including system
                 })
             });
+            
+            this.debugLog('Response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`Server error: ${response.status}`);
             }
             
             const data = await response.json();
+            this.debugLog('Response data:', data);
             
             if (data.success && data.messages) {
                 // Clear all messages
@@ -187,30 +196,42 @@ class DiscordChat {
                 this.addSystemMessage(`Welcome ${this.user.username}! 👋`);
                 this.addSystemMessage('Chat refreshes every 5 seconds to show new messages.');
                 
-                // Get the NEWEST 10 messages (backend already returns newest first)
-                const newestMessages = data.messages.slice(0, 20); // Get top 20 newest
+                this.debugLog('Total messages from server:', data.messages.length);
                 
-                // Sort them by timestamp (oldest first for display)
-                const sortedMessages = [...newestMessages].sort((a, b) => {
+                // Sort messages by timestamp (newest first)
+                const sortedMessages = [...data.messages].sort((a, b) => {
+                    return new Date(b.timestamp) - new Date(a.timestamp);
+                });
+                
+                // Get only recent messages (last 50)
+                const recentMessages = sortedMessages.slice(0, 50);
+                
+                // Now sort for display (oldest first)
+                const displayMessages = [...recentMessages].sort((a, b) => {
                     return new Date(a.timestamp) - new Date(b.timestamp);
                 });
                 
+                this.debugLog('Displaying messages:', displayMessages.length);
+                
                 // Add messages to chat
-                sortedMessages.forEach(msg => {
-                    this.processIncomingMessage(msg);
+                displayMessages.forEach(msg => {
+                    this.addMessageFromServer(msg);
                 });
                 
                 // Scroll to bottom
                 this.scrollToBottom();
                 
-                this.showNotification(`Loaded ${newestMessages.length} messages`, 'success');
+                this.showNotification(`Loaded ${displayMessages.length} messages`, 'success');
+                this.debugLog('Loaded messages successfully');
                 
             } else {
                 this.addSystemMessage('No messages found or server error');
+                this.debugLog('No messages in response');
             }
             
         } catch (error) {
             console.log('Load error:', error);
+            this.debugLog('Load error:', error.message);
             this.addSystemMessage('Could not load messages');
         }
     }
@@ -218,86 +239,106 @@ class DiscordChat {
     async checkForNewMessages() {
         if (!this.user) return;
 
+        this.debugLog('=== CHECKING FOR NEW MESSAGES ===');
+        this.debugLog('Time:', new Date().toLocaleTimeString());
+        this.debugLog('Currently displayed IDs:', this.displayedMessageIds.size);
+        
         try {
             const response = await fetch(this.SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action: 'load',
-                    channel: this.currentChannel
+                    channel: 'all'  // Load ALL messages
                 })
             });
             
-            if (!response.ok) return;
+            if (!response.ok) {
+                this.debugLog('Fetch failed:', response.status);
+                return;
+            }
             
             const data = await response.json();
             
-            if (data.success && data.messages && data.messages.length > 0) {
-                // Get only the newest messages (first 10 from backend)
-                const newestMessages = data.messages.slice(0, 10);
+            if (data.success && data.messages) {
+                this.debugLog('Server returned messages:', data.messages.length);
                 
                 let newCount = 0;
-                newestMessages.forEach(msg => {
-                    // Check if this message is already displayed
+                
+                // Check each message from server
+                data.messages.forEach(msg => {
                     if (!this.displayedMessageIds.has(msg.id)) {
-                        this.processIncomingMessage(msg);
+                        this.debugLog('New message found:', {
+                            id: msg.id,
+                            user: msg.username,
+                            msg: msg.message.substring(0, 30)
+                        });
+                        
+                        this.addMessageFromServer(msg);
                         newCount++;
                     }
                 });
                 
-                // Remove old messages if we have too many
-                this.limitMessagesDisplayed();
-                
-                if (newCount > 0 && this.isAtBottom()) {
-                    this.scrollToBottom();
+                if (newCount > 0) {
+                    this.debugLog(`Added ${newCount} new messages`);
+                    this.showNotification(`${newCount} new message${newCount > 1 ? 's' : ''}`);
+                    
+                    if (this.isAtBottom()) {
+                        this.scrollToBottom();
+                    }
+                } else {
+                    this.debugLog('No new messages found');
                 }
+                
+            } else {
+                this.debugLog('No messages in response');
             }
             
         } catch (error) {
             console.log('Check new messages error:', error);
+            this.debugLog('Check error:', error.message);
         }
     }
 
-    processIncomingMessage(msg) {
-        // Check if this is a system message (channel = 'system')
-        if (msg.channel === 'system') {
-            // Display as system message
-            this.addSystemMessage(msg.message);
-        } else {
-            // Regular message
-            const isOwn = msg.username === this.user.username;
-            this.addMessage({
-                id: msg.id,
-                username: msg.username,
-                message: msg.message,
-                time: this.formatTime(new Date(msg.timestamp || Date.now())),
-                channel: msg.channel
-            }, isOwn, false); // Don't scroll for each message
-        }
-        
+    addMessageFromServer(msg) {
         // Track this message ID
         this.displayedMessageIds.add(msg.id);
-    }
-
-    limitMessagesDisplayed() {
-        const messages = this.elements.messagesContainer.querySelectorAll('.message');
-        if (messages.length > this.MAX_MESSAGES) {
-            // Remove oldest messages (skip system messages if needed)
-            const toRemove = messages.length - this.MAX_MESSAGES;
-            for (let i = 0; i < toRemove; i++) {
-                const msg = messages[i];
-                const id = msg.id.replace('msg-', '');
-                if (id) {
-                    this.displayedMessageIds.delete(id);
-                }
-                msg.remove();
+        
+        // Check if this is a system message
+        if (msg.channel === 'system') {
+            this.debugLog('Adding system message:', msg.message);
+            this.addSystemMessage(msg.message);
+        } else {
+            // Regular message - only show if in current channel
+            if (msg.channel === this.currentChannel) {
+                const isOwn = msg.username === this.user.username;
+                this.debugLog('Adding regular message:', {
+                    user: msg.username,
+                    channel: msg.channel,
+                    isOwn: isOwn
+                });
+                
+                this.addMessage({
+                    id: msg.id,
+                    username: msg.username,
+                    message: msg.message,
+                    time: this.formatTime(new Date(msg.timestamp || Date.now())),
+                    channel: msg.channel
+                }, isOwn, false);
+            } else {
+                this.debugLog('Skipping message - wrong channel:', {
+                    msgChannel: msg.channel,
+                    currentChannel: this.currentChannel
+                });
             }
         }
     }
 
     isAtBottom() {
         const container = this.elements.messagesContainer;
-        return container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+        const isBottom = container.scrollHeight - container.clientHeight <= container.scrollTop + 50;
+        this.debugLog('Is at bottom?', isBottom);
+        return isBottom;
     }
 
     startAutoRefresh() {
@@ -305,14 +346,19 @@ class DiscordChat {
             clearInterval(this.refreshInterval);
         }
         
+        this.debugLog('Starting auto-refresh every 5 seconds');
+        
         // Check for new messages every 5 seconds
         this.refreshInterval = setInterval(() => {
+            this.debugLog('Auto-refresh triggered');
             this.checkForNewMessages();
         }, 5000);
     }
 
     switchChannel(channel) {
         if (channel === this.currentChannel) return;
+        
+        this.debugLog('Switching channel to:', channel);
         
         // Update UI
         document.querySelectorAll('.channel-item').forEach(item => {
@@ -330,14 +376,23 @@ class DiscordChat {
         this.elements.messagesContainer.innerHTML = '';
         
         // Load messages for new channel
-        this.loadInitialMessages();
+        this.loadAllMessages();
         
         this.addSystemMessage(`Switched to #${channel}`);
     }
 
     addMessage(message, isOwn = false, shouldScroll = true) {
         // Check if message already exists
-        if (document.getElementById('msg-' + message.id)) return;
+        if (document.getElementById('msg-' + message.id)) {
+            this.debugLog('Message already exists:', message.id);
+            return;
+        }
+        
+        this.debugLog('Adding message to DOM:', {
+            id: message.id,
+            user: message.username,
+            isOwn: isOwn
+        });
         
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message';
@@ -382,6 +437,7 @@ class DiscordChat {
         `;
 
         this.elements.messagesContainer.appendChild(messageDiv);
+        this.debugLog('System message added:', text);
     }
 
     formatTime(date) {
@@ -395,7 +451,20 @@ class DiscordChat {
         setTimeout(() => {
             const container = this.elements.messagesContainer;
             container.scrollTop = container.scrollHeight;
+            this.debugLog('Scrolled to bottom');
         }, 100);
+    }
+
+    debugLog(message, data = null) {
+        if (this.debugMode) {
+            console.log('[DEBUG]', message, data || '');
+            
+            // Also show in notifications
+            if (typeof message === 'string' && message.includes('===')) {
+                // Show important debug info as notification
+                this.showNotification(message.replace('===', '').trim(), 'warning');
+            }
+        }
     }
 
     showNotification(message, type = 'success') {
@@ -407,6 +476,8 @@ class DiscordChat {
             notification.style.background = '#ed4245';
         } else if (type === 'warning') {
             notification.style.background = '#faa81a';
+        } else if (type === 'info') {
+            notification.style.background = '#5865f2';
         }
         
         document.body.appendChild(notification);
