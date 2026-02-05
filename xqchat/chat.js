@@ -4,9 +4,8 @@ class DiscordChat {
         this.SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoYUoRPsMDO31zE3q5GZ2kwyrrHs8Uj5pKnAOiBJAuU9y5fs51olo3QtBNVND8d74T/exec';
         this.user = null;
         this.currentChannel = 'general';
-        this.lastMessageId = null;
         this.refreshInterval = null;
-        this.messageCache = new Set(); // Track displayed messages
+        this.lastRefreshTime = 0;
         
         this.init();
     }
@@ -31,13 +30,11 @@ class DiscordChat {
     }
 
     setupEventListeners() {
-        // Login
         this.elements.loginButton.addEventListener('click', () => this.login());
         this.elements.usernameInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.login();
         });
 
-        // Message input
         this.elements.messageInput.addEventListener('input', () => {
             this.elements.sendButton.disabled = !this.elements.messageInput.value.trim();
         });
@@ -51,7 +48,6 @@ class DiscordChat {
         
         this.elements.sendButton.addEventListener('click', () => this.sendMessage());
 
-        // Channel switching
         this.elements.channelList.addEventListener('click', (e) => {
             const channelItem = e.target.closest('.channel-item');
             if (channelItem) {
@@ -65,11 +61,6 @@ class DiscordChat {
         
         if (!username || username.length < 2) {
             this.showNotification('Please enter a username (min 2 characters)', 'error');
-            return;
-        }
-
-        if (username.length > 20) {
-            this.showNotification('Username too long (max 20 characters)', 'error');
             return;
         }
 
@@ -93,12 +84,12 @@ class DiscordChat {
         this.addSystemMessage('Chat refreshes every 3 seconds to show new messages.');
         
         // Load initial messages
-        await this.loadMessages();
+        await this.loadAllMessages();
         
         // Start auto-refresh
         this.startAutoRefresh();
         
-        // Send join notification
+        // Send join message
         this.sendToGoogleSheets({
             action: 'send',
             username: username,
@@ -115,154 +106,103 @@ class DiscordChat {
 
         // Create message
         const now = new Date();
-        const messageId = 'msg_' + Date.now();
         const message = {
-            id: messageId,
+            id: 'msg_' + Date.now(),
             username: this.user.username,
             message: messageText,
             time: this.formatTime(now),
             channel: this.currentChannel
         };
 
-        // Add to chat immediately (optimistic update)
+        // Add to chat immediately
         this.addMessage(message, true);
-        this.messageCache.add(messageId);
-        this.lastMessageId = messageId;
         
         // Clear input
         this.elements.messageInput.value = '';
         this.elements.sendButton.disabled = true;
         
         // Save to Google Sheets
-        try {
-            await this.sendToGoogleSheets({
-                action: 'send',
-                username: this.user.username,
-                channel: this.currentChannel,
-                message: messageText
-            });
-            
-            this.showNotification('Message sent ✓');
-            
-        } catch (error) {
-            this.showNotification('Failed to send', 'error');
-        }
+        this.sendToGoogleSheets({
+            action: 'send',
+            username: this.user.username,
+            channel: this.currentChannel,
+            message: messageText
+        });
+        
+        this.showNotification('Message sent ✓');
     }
 
-    async sendToGoogleSheets(data) {
-        return fetch(this.SCRIPT_URL, {
+    sendToGoogleSheets(data) {
+        fetch(this.SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
+        }).catch(error => {
+            console.log('Send error:', error);
         });
     }
 
-    async loadMessages() {
-        if (!this.user) return;
-
+    async loadAllMessages() {
         try {
-            // Load messages from Google Sheets
-            const response = await fetch(this.SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'load',
-                    channel: this.currentChannel
-                })
+            // Get all messages from Google Sheets via CSV export
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1qc5I-jlMBuUqkexdO_pGtjKCD8kD4GeqRW5VOgbaH_w/export?format=csv';
+            
+            const response = await fetch(sheetUrl);
+            const csvText = await response.text();
+            
+            // Parse CSV
+            const rows = csvText.split('\n');
+            const messages = [];
+            
+            // Skip header row
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i].split(',');
+                if (row.length >= 4 && row[2] === this.currentChannel) {
+                    messages.push({
+                        id: row[0] || `msg_${i}`,
+                        username: row[1] || 'Anonymous',
+                        channel: row[2],
+                        message: row[3] || '',
+                        timestamp: row[4] || new Date().toISOString()
+                    });
+                }
+            }
+            
+            // Display messages (newest first)
+            messages.reverse().forEach(msg => {
+                const existing = document.getElementById('msg-' + msg.id);
+                if (!existing) {
+                    const isOwn = msg.username === this.user?.username;
+                    this.addMessage({
+                        id: msg.id,
+                        username: msg.username,
+                        message: msg.message,
+                        time: this.formatTime(new Date(msg.timestamp)),
+                        channel: msg.channel
+                    }, isOwn);
+                }
             });
             
-            const data = await response.json();
-            
-            if (data.success && data.messages) {
-                // Clear chat but keep system messages
-                const systemMessages = Array.from(this.elements.messagesContainer.children)
-                    .filter(el => el.querySelector('.message-author')?.textContent === 'System');
-                
-                this.elements.messagesContainer.innerHTML = '';
-                systemMessages.forEach(msg => this.elements.messagesContainer.appendChild(msg));
-                
-                // Add all messages from server
-                let foundLastMessage = false;
-                data.messages.forEach(msg => {
-                    if (!this.messageCache.has(msg.id)) {
-                        const isOwn = msg.username === this.user.username;
-                        this.addMessage({
-                            id: msg.id,
-                            username: msg.username,
-                            message: msg.message,
-                            time: this.formatTime(new Date(msg.timestamp)),
-                            channel: msg.channel
-                        }, isOwn);
-                        this.messageCache.add(msg.id);
-                        
-                        if (!this.lastMessageId) {
-                            this.lastMessageId = msg.id;
-                        }
-                    }
-                    
-                    if (msg.id === this.lastMessageId) {
-                        foundLastMessage = true;
-                    }
-                });
-                
-                // Update last message ID if we didn't find it (new channel)
-                if (!foundLastMessage && data.messages.length > 0) {
-                    this.lastMessageId = data.messages[0].id;
-                }
-                
-                this.scrollToBottom();
-            }
+            this.scrollToBottom();
             
         } catch (error) {
             console.log('Load error:', error);
+            this.addSystemMessage('Could not load messages');
         }
     }
 
     async checkForNewMessages() {
-        if (!this.user || !this.lastMessageId) return;
-
         try {
-            const response = await fetch(this.SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'load',
-                    channel: this.currentChannel,
-                    since: this.lastMessageId
-                })
-            });
+            // Simple timestamp check
+            const now = Date.now();
+            if (now - this.lastRefreshTime < 3000) return;
             
-            const data = await response.json();
-            
-            if (data.success && data.messages && data.messages.length > 0) {
-                let newMessages = false;
-                
-                // Check if there are messages newer than our last known
-                for (const msg of data.messages) {
-                    if (!this.messageCache.has(msg.id)) {
-                        const isOwn = msg.username === this.user.username;
-                        this.addMessage({
-                            id: msg.id,
-                            username: msg.username,
-                            message: msg.message,
-                            time: this.formatTime(new Date(msg.timestamp)),
-                            channel: msg.channel
-                        }, isOwn);
-                        this.messageCache.add(msg.id);
-                        newMessages = true;
-                        
-                        // Update last message ID
-                        this.lastMessageId = msg.id;
-                    }
-                }
-                
-                if (newMessages) {
-                    this.scrollToBottom();
-                }
-            }
+            // Reload all messages
+            await this.loadAllMessages();
+            this.lastRefreshTime = now;
             
         } catch (error) {
-            console.log('Check new messages error:', error);
+            console.log('Refresh error:', error);
         }
     }
 
@@ -276,8 +216,6 @@ class DiscordChat {
         this.refreshInterval = setInterval(() => {
             this.checkForNewMessages();
         }, 3000);
-        
-        console.log('Auto-refresh started: checking every 3 seconds');
     }
 
     stopAutoRefresh() {
@@ -301,12 +239,8 @@ class DiscordChat {
         this.elements.messageInput.placeholder = `Message #${channel}`;
         this.elements.messageInput.focus();
         
-        // Clear message cache for new channel
-        this.messageCache.clear();
-        this.lastMessageId = null;
-        
         // Load messages for new channel
-        this.loadMessages();
+        this.loadAllMessages();
         
         this.addSystemMessage(`Switched to #${channel}`);
     }
