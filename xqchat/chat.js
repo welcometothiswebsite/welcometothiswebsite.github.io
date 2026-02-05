@@ -6,6 +6,7 @@ class DiscordChat {
         this.currentChannel = 'general';
         this.refreshInterval = null;
         this.lastMessageTime = null;
+        this.lastLoadedMessageIds = new Set(); // Track loaded message IDs
         
         this.init();
     }
@@ -142,24 +143,8 @@ class DiscordChat {
         if (!this.user) return;
 
         try {
-            // FIRST: Save current scroll position
-            const scrollPos = this.elements.messagesContainer.scrollTop;
-            const atBottom = this.isAtBottom();
-            
-            // Save current messages (except system)
-            const currentMessages = [];
-            const children = Array.from(this.elements.messagesContainer.children);
-            
-            for (let child of children) {
-                const authorEl = child.querySelector('.message-author');
-                if (authorEl && authorEl.textContent !== 'System') {
-                    const id = child.id.replace('msg-', '');
-                    currentMessages.push({
-                        id: id,
-                        element: child
-                    });
-                }
-            }
+            // Clear tracked message IDs for this channel
+            this.lastLoadedMessageIds.clear();
             
             // Try to load via API
             const response = await fetch(this.SCRIPT_URL, {
@@ -178,16 +163,20 @@ class DiscordChat {
             const data = await response.json();
             
             if (data.success && data.messages) {
-                // Clear non-system messages
-                this.elements.messagesContainer.querySelectorAll('.message').forEach(msg => {
-                    const author = msg.querySelector('.message-author');
-                    if (author && author.textContent !== 'System') {
-                        msg.remove();
-                    }
+                // Clear all messages (including system)
+                this.elements.messagesContainer.innerHTML = '';
+                
+                // Add welcome messages back
+                this.addSystemMessage(`Welcome ${this.user.username}! 👋`);
+                this.addSystemMessage('Chat refreshes every 5 seconds to show new messages.');
+                
+                // Sort messages by timestamp (oldest first)
+                const sortedMessages = [...data.messages].sort((a, b) => {
+                    return new Date(a.timestamp) - new Date(b.timestamp);
                 });
                 
-                // Add messages from server
-                data.messages.forEach(msg => {
+                // Add messages from server in correct order
+                sortedMessages.forEach(msg => {
                     const isOwn = msg.username === this.user.username;
                     this.addMessage({
                         id: msg.id,
@@ -195,15 +184,16 @@ class DiscordChat {
                         message: msg.message,
                         time: this.formatTime(new Date(msg.timestamp || Date.now())),
                         channel: msg.channel
-                    }, isOwn);
+                    }, isOwn, false); // Don't scroll for each message
+                    
+                    // Track this message ID
+                    this.lastLoadedMessageIds.add(msg.id);
                 });
                 
-                // Restore scroll position
-                if (!atBottom) {
-                    this.elements.messagesContainer.scrollTop = scrollPos;
-                }
+                // Scroll to bottom after loading all messages
+                this.scrollToBottom();
                 
-                this.showNotification(`Loaded ${data.messages.length} messages`, 'success');
+                this.showNotification(`Loaded ${sortedMessages.length} messages`, 'success');
                 
             } else {
                 this.addSystemMessage('No messages found or server error');
@@ -233,17 +223,15 @@ class DiscordChat {
             const data = await response.json();
             
             if (data.success && data.messages && data.messages.length > 0) {
-                // Get current message IDs
-                const currentIds = new Set();
-                this.elements.messagesContainer.querySelectorAll('.message').forEach(msg => {
-                    const id = msg.id.replace('msg-', '');
-                    if (id) currentIds.add(id);
+                // Sort messages by timestamp (oldest first)
+                const sortedMessages = [...data.messages].sort((a, b) => {
+                    return new Date(a.timestamp) - new Date(b.timestamp);
                 });
                 
-                // Add new messages
                 let newCount = 0;
-                data.messages.forEach(msg => {
-                    if (!currentIds.has(msg.id)) {
+                sortedMessages.forEach(msg => {
+                    // Check if this message is already displayed
+                    if (!this.lastLoadedMessageIds.has(msg.id)) {
                         const isOwn = msg.username === this.user.username;
                         this.addMessage({
                             id: msg.id,
@@ -251,13 +239,23 @@ class DiscordChat {
                             message: msg.message,
                             time: this.formatTime(new Date(msg.timestamp || Date.now())),
                             channel: msg.channel
-                        }, isOwn);
+                        }, isOwn, false); // Don't scroll for each message
+                        
+                        // Track this new message ID
+                        this.lastLoadedMessageIds.add(msg.id);
                         newCount++;
                     }
                 });
                 
-                if (newCount > 0 && this.isAtBottom()) {
-                    this.scrollToBottom();
+                if (newCount > 0) {
+                    // Scroll only if user is at bottom
+                    if (this.isAtBottom()) {
+                        this.scrollToBottom();
+                    }
+                    // Show notification if not at bottom
+                    if (!this.isAtBottom() && newCount > 0) {
+                        this.showNotification(`${newCount} new message${newCount > 1 ? 's' : ''}`);
+                    }
                 }
             }
             
@@ -296,13 +294,16 @@ class DiscordChat {
         this.elements.messageInput.placeholder = `Message #${channel}`;
         this.elements.messageInput.focus();
         
+        // Clear tracked messages for old channel
+        this.lastLoadedMessageIds.clear();
+        
         // Load messages for new channel
         this.loadMessages();
         
         this.addSystemMessage(`Switched to #${channel}`);
     }
 
-    addMessage(message, isOwn = false) {
+    addMessage(message, isOwn = false, shouldScroll = true) {
         // Check if message already exists
         if (document.getElementById('msg-' + message.id)) return;
         
@@ -326,8 +327,8 @@ class DiscordChat {
 
         this.elements.messagesContainer.appendChild(messageDiv);
         
-        // Only auto-scroll if at bottom
-        if (this.isAtBottom()) {
+        // Only auto-scroll if at bottom and shouldScroll is true
+        if (shouldScroll && this.isAtBottom()) {
             this.scrollToBottom();
         }
     }
