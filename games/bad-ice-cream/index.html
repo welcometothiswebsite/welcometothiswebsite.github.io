@@ -1,162 +1,126 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="content-type" content="text/html; charset=UTF8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="#382C2A" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 
-    <title>Bad Ice Cream | DachXD</title>
-    <link rel="icon" href="/favicon.ico">
-    <script src="poki.js"></script>
-    <script type="text/javascript" src="./js/loader.js"></script>
-    <script type="text/javascript" src="./js/virtualJoystickSkinMod.js"></script>
-    <script type="text/javascript" src="./preloader/nitromePreloader.js"></script>
-    <script src="/js/main.js"></script>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
+<Module>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>really cool flash game</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    #flash-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: black;
+      overflow: hidden;
+    }
+    .black-box {
+      position: fixed;
+      background: black;
+      z-index: 10;
+    }
+    #box-top {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    #box-bottom {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+    }
+    #box-left {
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 100%;
+    }
+    #box-right {
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 100%;
+    }
+    ruffle-player {
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: block;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@ruffle-rs/ruffle@0.2.0-nightly.2025.10.2/ruffle.min.js"></script>
+</head>
+<body>
+  <div id="flash-container"></div>
+  <div class="black-box" id="box-top"></div>
+  <div class="black-box" id="box-bottom"></div>
+  <div class="black-box" id="box-left"></div>
+  <div class="black-box" id="box-right"></div>
+  <script>
+    const container = document.getElementById("flash-container");
+    const boxTop = document.getElementById("box-top");
+    const boxBottom = document.getElementById("box-bottom");
+    const boxLeft = document.getElementById("box-left");
+    const boxRight = document.getElementById("box-right");
+    
+    function resizeGame() {
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const aspectRatio = 5.5 / 3;
+      
+      // Use 95% of available space instead of 100%
+      let width = Math.floor(windowWidth * 1);
+      let height = Math.floor(width / aspectRatio);
+      
+      if (height > windowHeight * 1) {
+        height = Math.floor(windowHeight * 1);
+        width = Math.floor(height * aspectRatio);
       }
-
-      canvas {
-        outline: none;
+      
+      container.style.width = `${width}px`;
+      container.style.height = `${height}px`;
+      
+      // Calculate margins
+      const topMargin = (windowHeight - height) / 2;
+      const leftMargin = (windowWidth - width) / 2;
+      
+      // Set black box sizes
+      boxTop.style.height = `${topMargin}px`;
+      boxBottom.style.height = `${topMargin}px`;
+      boxLeft.style.width = `${leftMargin}px`;
+      boxRight.style.width = `${leftMargin}px`;
+    }
+    
+    window.addEventListener("resize", resizeGame);
+    window.addEventListener("DOMContentLoaded", () => {
+      resizeGame();
+      const ruffle = window.RufflePlayer?.newest() || window.RufflePlayer?.createPlayer();
+      if (ruffle && container) {
+        const player = ruffle.createPlayer();
+        player.style.width = "100%";
+        player.style.height = "100%";
+        player.style.background = "black";
+        container.appendChild(player);
+        player.load("$1");
+      } else {
+        container.textContent = "Ruffle failed to load."; 
       }
-
-      html,
-      body,
-      #container {
-        margin: 0;
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-        background-color: #9badbe;
-      }
-
-      #splash {
-        position: absolute;
-        visibility: hidden;
-        z-index: 10;
-      }
-
-      #splash__image {
-        position: absolute;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-image: url("assets/badicecream_splash.jpg");
-        visibility: visible;
-        transition: opacity 0.5s;
-        z-index: 10;
-      }
-
-      #progress__root {
-        position: absolute;
-      }
-
-      #progress__line {
-        width: 0;
-        height: 100%;
-        transition: all 0.5s;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="splash__image">
-      <div id="progress__root">
-        <div id="progress__line"></div>
-      </div>
-    </div>
-
-    <script>
-      window.addEventListener("load", () => {
-        PokiSDK.setDebugTouchOverlayController(true);
-
-        PokiSDK.init()
-          .then(() => {
-            // successfully initialized
-            onPokiInitComplete(false);
-          })
-          .catch(() => {
-            // successfully initialized but the user has adblock
-            onPokiInitComplete(true);
-          });
-        let config;
-
-        config = {
-          key: "bic1",
-          title: "BadIceCream 1",
-          filename: "BadIceCream1_sdk",
-          pokiSDK: true,
-          debugPoki: false,
-          showFPS: false,
-          debug: false,
-          splash: "assets/badicecream_splash.jpg",
-          start: null,
-          width: 550,
-          height: 550,
-          x: 0,
-          y: 0,
-          w: "100%",
-          h: "100%",
-          stageScaleMode: null,
-          stageAlign: null,
-          progressParserWeigth: 1,
-          progress: {
-            direction: "lr",
-            back: "#35809e",
-            line: "#070bff",
-            rect: [0.25, 0.65, 0.5, 0.03],
-          },
-          box2dVersion: "none",
-          skipFramesOfScene: null,
-          buttonPokiSDKActions: null,
-          retryButtonIDS: null,
-          retryButtonAction: null,
-          actionOnStop: null,
-          actionWhenRetryButtonEncountered: null,
-          binary: [
-            {
-              name: "BadIceCream1_sdk",
-              path: "assets/BadIceCream1_sdk.swf",
-              size: 1937690,
-              resourceType: "GAME",
-            },
-          ],
-          runtime: "js/BadIceCream.js",
-        };
-
-        PokiSDK.setDebug(config.debugPoki);
-
-        Loader.init(config);
-
-        let onPokiInitComplete = (adBlocked) => {
-          PokiSDK.adBlocked = adBlocked;
-          PokiSDK.gameLoadingStart();
-
-          Loader.runGame(
-            (fill) => {
-              PokiSDK.gameLoadingProgress({
-                percentageDone: fill,
-                kbLoaded: 0,
-                kbTotal: 0,
-                fileNameLoaded: "",
-                filesLoaded: 0,
-                filesTotal: 0,
-              });
-              window.nitromePreloaderSetProgress(fill / 1.0);
-            },
-            (instance) => {
-              PokiSDK.gameLoadingFinished();
-              window.nitromePreloaderSetComplete();
-            }
-          );
-        };
-        window.nitromePreloaderInit("bad-ice-cream");
-      });
-    </script>
-  </body>
+    });
+  </script>
+    <param name="movie" value="https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@8fecedfd237e90740ce30b860005e6819b6df9cd/Bad-Ice-Cream.swf">
+    <embed src="https://cdn.jsdelivr.net/gh/bubbls/UGS-file-encryption@8fecedfd237e90740ce30b860005e6819b6df9cd/Bad-Ice-Cream.swf" width="100%" height="100%">
+</body>
 </html>
+]]></Content>
+</Module>
