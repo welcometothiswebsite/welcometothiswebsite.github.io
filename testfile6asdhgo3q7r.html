@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>josephasn.com</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+
+body{
+
+    min-height:100vh;
+    overflow-x:hidden;
+
+    background:#111;
+    background-size:cover;
+    background-position:center;
+
+    display:flex;
+    flex-direction:column;
+}
+
+
+
+/* BACKGROUND BUTTON */
+
+
+.background-btn{
+
+    position:fixed;
+
+    top:15px;
+    right:15px;
+
+    width:50px;
+    height:50px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.5);
+
+    background:rgba(255,255,255,.75);
+
+    cursor:pointer;
+
+    font-size:24px;
+
+    transition:.2s;
+
+    z-index:20;
+
+}
+
+
+.background-btn:hover{
+
+    transform:scale(1.08);
+
+}
+
+
+
+/* MAIN */
+
+
+.main{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+
+/* TITLE */
+
+
+.logo{
+
+    font-size:75px;
+
+    font-weight:800;
+
+    letter-spacing:-5px;
+
+    margin-bottom:5px;
+
+    color:white;
+
+    text-shadow:0 3px 20px black;
+
+}
+
+
+
+.website-title{
+
+    font-size:28px;
+
+    color:white;
+
+    margin-bottom:35px;
+
+    text-shadow:0 3px 15px black;
+
+}
+
+
+
+
+/* SEARCH */
+
+
+.search{
+
+    width:620px;
+
+    max-width:90%;
+
+    height:60px;
+
+    border-radius:35px;
+
+    border:1px solid rgba(255,255,255,.5);
+
+    background:rgba(255,255,255,.85);
+
+    padding:0 25px;
+
+    font-size:20px;
+
+    outline:none;
+
+}
+
+
+
+
+
+/* BUTTON AREA */
+
+
+.social-container{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:15px;
+
+    margin-top:35px;
+
+}
+
+
+
+/* TWITTER STYLE BUTTON */
+
+
+.social-btn {
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+    border:1px solid rgba(255,255,255,.5);
+
+    border-radius:12px;
+
+
+    color:#000;
+
+    cursor:pointer;
+
+
+    font-size:22px;
+
+
+    padding:14px 25px;
+
+
+    background:rgba(255,255,255,.85);
+
+
+    backdrop-filter:blur(10px);
+
+
+    text-decoration:none;
+
+
+    transition:transform 75ms ease-in-out;
+
+
+}
+
+
+
+.social-btn:hover {
+
+
+    box-shadow:3px 3px 5px rgba(0,0,0,.2);
+
+    transform:scale(1.05);
+
+
+}
+
+
+
+.social-btn-icon{
+
+    height:28px;
+
+    margin-right:10px;
+
+}
+
+
+
+
+.arrow{
+
+    margin-left:10px;
+
+    transition:.3s;
+
+}
+
+
+
+.active .arrow{
+
+    transform:rotate(180deg);
+
+}
+
+
+
+
+
+/* DROP AREA */
+
+
+.dropdown-area{
+
+
+    width:900px;
+
+    max-width:90%;
+
+
+    margin-top:35px;
+
+
+    display:none;
+
+
+    justify-content:center;
+
+
+    gap:20px;
+
+
+    flex-wrap:wrap;
+
+
+    padding:25px;
+
+
+
+    background:rgba(255,255,255,.18);
+
+
+    backdrop-filter:blur(15px);
+
+
+    border-radius:25px;
+
+
+    border:1px solid rgba(255,255,255,.3);
+
+
+}
+
+
+
+.dropdown-area.show{
+
+    display:flex;
+
+}
+
+
+
+/* BIG SQUARE BUTTONS */
+
+
+.square{
+
+
+    width:150px;
+
+    height:120px;
+
+
+    border-radius:18px;
+
+
+    background:rgba(255,255,255,.75);
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    color:black;
+
+
+    font-size:20px;
+
+
+    cursor:pointer;
+
+
+    transition:.2s;
+
+
+}
+
+
+
+.square:hover{
+
+
+    transform:scale(1.08);
+
+    background:white;
+
+
+}
+
+
+
+
+
+/* VIEW ALL BUTTON */
+
+
+.view-all{
+
+
+    width:320px;
+
+    height:55px;
+
+
+    border-radius:15px;
+
+
+    background:rgba(0,0,0,.75);
+
+
+    color:white;
+
+
+    display:flex;
+
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    font-size:20px;
+
+
+}
+
+
+
+
+
+
+/* TWITTER EXTRA BUTTON */
+
+
+.twitter-btn{
+
+
+    margin-top:20px;
+
+
+    width:320px;
+
+
+}
+
+.twitter-container{
+
+    display:flex;
+
+    justify-content:center;
+
+    margin-top:20px;
+
+}
+
+
+.twitter-btn{
+
+    width:320px;
+
+    margin-bottom:120px;
+
+}
+
+</style>
+</head>
+
+<body>
+
+
+<button class="background-btn" onclick="changeBackground()">
+🖼️
+</button>
+
+<input
+type="file"
+id="bgPicker"
+accept="image/*,video/*"
+hidden>
+
+
+
+<div class="main">
+
+
+
+<div class="logo">
+josephasn.com
+</div>
+
+
+
+<input
+class="search"
+placeholder="Search josephasn.com coming soon!">
+
+
+
+
+
+<div class="social-container">
+
+
+<button class="social-btn" onclick="openMenu('games')">
+
+Games
+
+<span class="arrow">
+▼
+</span>
+
+</button>
+
+
+
+<button class="social-btn" onclick="openMenu('apps')">
+
+Apps
+
+<span class="arrow">
+▼
+</span>
+
+</button>
+
+
+
+<button class="social-btn" onclick="openMenu('more')">
+
+More
+
+<span class="arrow">
+▼
+</span>
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- GAMES DROPDOWN -->
+
+<div id="games" class="dropdown-area">
+
+
+<div class="square">
+<img src="games/1/meta/apple-touch-icon.png" alt="A descriptive summary of the image">
+</div>
+
+<div class="square">
+Game 2
+</div>
+
+<div class="square">
+Game 3
+</div>
+
+<div class="square">
+Game 4
+</div>
+
+<div class="square">
+Game 5
+</div>
+
+<div class="square">
+Game 6
+</div>
+
+<div class="square">
+Game 7
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+<!-- APPS DROPDOWN -->
+
+
+<div id="apps" class="dropdown-area">
+
+
+<div class="square">
+App 1
+</div>
+
+
+<div class="square">
+App 2
+</div>
+
+
+<div class="square">
+App 3
+</div>
+
+
+<div class="square">
+App 4
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- MORE DROPDOWN -->
+
+
+<div id="more" class="dropdown-area">
+
+
+<div class="square">
+About
+</div>
+
+
+<div class="square">
+Tools
+</div>
+
+
+<div class="square">
+Media
+</div>
+
+
+<div class="square">
+Contact
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div> <!-- social-container -->
+
+
+<div class="twitter-container">
+
+
+<a
+href="https://x.com/qxzofficial"
+target="_blank"
+class="social-btn twitter-btn"
+>
+
+
+<img
+src="https://www.neal.fun/general/twitter.svg"
+alt="Twitter"
+class="social-btn-icon"
+>
+
+
+Twitter
+
+
+</a>
+
+
+</div>
+
+<script>
+
+
+// DROPDOWN SYSTEM
+
+
+let opened = null;
+
+
+function openMenu(id){
+
+
+let box=document.getElementById(id);
+
+
+
+if(opened && opened!==box){
+
+opened.classList.remove("show");
+
+}
+
+
+
+if(box.classList.contains("show")){
+
+
+box.classList.remove("show");
+
+opened=null;
+
+
+}
+
+else{
+
+
+box.classList.add("show");
+
+opened=box;
+
+
+}
+
+
+
+}
+
+
+
+
+
+// BACKGROUND CHANGER
+
+
+const picker=document.getElementById("bgPicker");
+
+
+
+function changeBackground(){
+
+picker.click();
+
+}
+
+
+
+
+
+picker.onchange=function(){
+
+
+let file=this.files[0];
+
+
+if(!file)return;
+
+
+
+let url=URL.createObjectURL(file);
+
+
+
+localStorage.setItem(
+"joseBackground",
+url
+);
+
+
+
+if(file.type.startsWith("video")){
+
+
+let old=document.querySelector("video");
+
+
+if(old)
+old.remove();
+
+
+
+let video=document.createElement("video");
+
+
+video.src=url;
+
+video.autoplay=true;
+
+video.loop=true;
+
+video.muted=true;
+
+
+
+video.style.position="fixed";
+
+video.style.top="0";
+
+video.style.left="0";
+
+video.style.width="100%";
+
+video.style.height="100%";
+
+video.style.objectFit="cover";
+
+video.style.zIndex="-1";
+
+
+
+document.body.appendChild(video);
+
+
+
+}
+
+
+else{
+
+
+document.body.style.backgroundImage=
+`url(${url})`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+// LOAD SAVED BACKGROUND
+
+
+let saved =
+localStorage.getItem("joseBackground");
+
+
+
+if(saved){
+
+
+document.body.style.backgroundImage=
+`url(${saved})`;
+
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
